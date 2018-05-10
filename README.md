@@ -38,7 +38,7 @@ For my research at Oregon State University in the Civil Engineering Department, 
 The interface will be similar to the image from Pix4D shown in the project description.  There will be a pointcloud that the user can fly around, but there will be images added to the scene depicting where the image was acquired from.  The sidebar will be customized to enhance the user experience for specific datasets, and a Cesium map will be added beneath the pointcloud.
 
 ## Proposed Timeline
-
+* Need to Update This (05/10/2018)
 | Task                                                         |      Date      |
 | :----------------------------------------------------------- | :------------: |
 | Add Image texture to plane using THREE.js                    |   04/30/2018   |
@@ -53,3 +53,7 @@ The interface will be similar to the image from Pix4D shown in the project descr
 | option 2: Make nice js library to make adding these to Potree really easy | if time allows |
 | option 3: Snap view to images with correct FOV               | if time allows |
 
+## Interface Sketch
+Below is a rough idea for the desired interface.  I hope to use a bootstrap navigation bar up top, with icons to indicate the possible dropdowns.  The main potree viewer will be enhanced with the optional addition of a Cesium map, and "image pyradmids" in the scene.  These image pyramids will allow the user to see how the pointcloud was generated.  An attribution will also be placed in the lower right, similar to how leaflet does.
+
+![layout](https://github.com/hokiespurs/images-in-a-potree/blob/master/img/layoutdesignv1.jpg?raw=true)

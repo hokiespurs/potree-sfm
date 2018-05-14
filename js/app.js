@@ -37,7 +37,7 @@ var field = new THREE.Mesh(geometry2, material2);
 field.rotation.x = 0;
 
 // Add cube to Scene
-// scene.add( cube );
+scene.add( cube );
 scene.add( field );
 // Render Loop
 var render = function () {
@@ -45,8 +45,8 @@ var render = function () {
 
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
-    // field.rotation.x += 0.01;
-    // field.rotation.y += 0.02;
+    field.rotation.x += 0.01;
+    field.rotation.y += 0.02;
 
     // Render the scene
     renderer.render(scene, camera);

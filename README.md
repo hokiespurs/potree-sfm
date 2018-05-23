@@ -55,3 +55,15 @@ The interface will be similar to the image from Pix4D shown in the project descr
 Below is a rough idea for the desired interface.  I hope to use a bootstrap navigation bar up top, with icons to indicate the possible dropdowns.  The main potree viewer will be enhanced with the optional addition of a Cesium map, and "image pyradmids" in the scene.  These image pyramids will allow the user to see how the pointcloud was generated.  An attribution will also be placed in the lower right, similar to how leaflet does.
 
 ![layout](https://github.com/hokiespurs/images-in-a-potree/blob/master/img/layoutdesignv1.jpg?raw=true)
+
+## Color Palette
+The colors will be simple, so as not to take away from the pointcloud visual.  I will use the [bootstrap "light navbar"](https://getbootstrap.com/docs/4.0/components/navbar/), and follow that gray color scheme throughout.
+
+For the font, I will use the default Bootstrap ```"Helvetica Neue", Helvetica, Arial, sans-serif.```.  
+
+See below for an example.
+
+![design](https://github.com/hokiespurs/images-in-a-potree/blob/master/img/design.png?raw=true)
+
+
+

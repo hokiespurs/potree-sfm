@@ -41,7 +41,7 @@ The interface will be similar to the image from Pix4D shown in the project descr
 | Task                                                         |      Date      | Date Completed |
 | :----------------------------------------------------------- | :------------: | :------------: | 
 | item1</li> Add Image texture to plane using THREE.js                    |   04/30/2018   | 04/30/2018
-| Add one Image plane-pyramid into a Potree scene w/ rotation matrix applied |   05/14/2018   |
+| Add one Image plane-pyramid into a Potree scene w/ rotation matrix applied |   05/14/2018   | 05/13/2018
 | Add Cesium Map                                               |   05/21/2018   |             |
 | Custom Layout Design                                         |   05/21/2018   | 05/10/2018  |
 | Custom Layout Implementation                                 |   05/28/2018   |             |

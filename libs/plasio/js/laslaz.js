@@ -205,7 +205,9 @@
 	//
 	var LAZLoader = function(arraybuffer) {
 		this.arraybuffer = arraybuffer;
-		this.ww = Potree.workers.laslaz.getWorker();
+		
+		let workerPath = Potree.scriptPath + "/workers/LASLAZWorker.js";
+		this.ww = Potree.workerPool.getWorker(workerPath);
 
 		this.nextCB = null;
 		var o = this;
@@ -272,7 +274,8 @@
 
 		return new Promise(function(res, rej) {
 			o.dorr({type:'close'}, function(r) {
-				Potree.workers.laslaz.returnWorker(o.ww);
+				let workerPath = Potree.scriptPath + "/workers/LASLAZWorker.js";
+				Potree.workerPool.returnWorker(workerPath, o.ww);
 			
 				if (r.status !== 1)
 					return rej(new Error("Failed to close file"));
@@ -357,33 +360,33 @@
 	// NACL Module support
 	// Called by the common.js module.
 	//
-	window.startNaCl = function(name, tc, config, width, height) {
-		// check browser support for nacl
-		//
-		if(!common.browserSupportsNaCl()) {
-			return $.event.trigger({
-				type: "plasio.nacl.error",
-				message: "NaCl support is not available"
-			});
-		}
+	//window.startNaCl = function(name, tc, config, width, height) {
+	//	// check browser support for nacl
+	//	//
+	//	if(!common.browserSupportsNaCl()) {
+	//		return $.event.trigger({
+	//			type: "plasio.nacl.error",
+	//			message: "NaCl support is not available"
+	//		});
+	//	}
 
-		navigator.webkitPersistentStorage.requestQuota(2048 * 2048, function(bytes) {
-			common.updateStatus(
-				'Allocated ' + bytes + ' bytes of persistant storage.');
-				common.attachDefaultListeners();
-				common.createNaClModule(name, tc, config, width, height);
-		},
-		function(e) { 
-			$.event.trigger({
-				type: "plasio.nacl.error",
-				message: "Could not allocate persistant storage"
-			});
-		});
+	//	navigator.webkitPersistentStorage.requestQuota(2048 * 2048, function(bytes) {
+	//		common.updateStatus(
+	//			'Allocated ' + bytes + ' bytes of persistant storage.');
+	//			common.attachDefaultListeners();
+	//			common.createNaClModule(name, tc, config, width, height);
+	//	},
+	//	function(e) { 
+	//		$.event.trigger({
+	//			type: "plasio.nacl.error",
+	//			message: "Could not allocate persistant storage"
+	//		});
+	//	});
 
-		$(document).on("plasio.nacl.available", function() {
-			scope.LASModuleWasLoaded = true;
-		});
-	};
+	//	$(document).on("plasio.nacl.available", function() {
+	//		scope.LASModuleWasLoaded = true;
+	//	});
+	//};
 
 	scope.LAZLoader = LAZLoader;
 	scope.LASLoader = LASLoader;

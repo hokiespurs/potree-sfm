@@ -1,17 +1,99 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Three.js 101</title>
-    <!--  Simple reset to delete the margins  -->
-    <style>
-        body { margin: 0; }
-        canvas { width: 100%; height: 100% }
-    </style>
-    <!--  Three.js CDN  -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Potree Viewer</title>
+
+    <link rel="stylesheet" type="text/css" href="libs/potree/potree.css">
+    <link rel="stylesheet" type="text/css" href="libs/jquery-ui/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="libs/perfect-scrollbar/css/perfect-scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="libs/openlayers3/ol.css">
+    <link rel="stylesheet" type="text/css" href="libs/spectrum/spectrum.css">
+    <link rel="stylesheet" type="text/css" href="libs/jstree/themes/mixed/style.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
+
 <body>
-<!--  Our code  -->
-<script src="js/app.js"></script>
+<script src="libs/jquery/jquery-3.1.1.min.js"></script>
+<script src="libs/spectrum/spectrum.js"></script>
+<script src="libs/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
+<script src="libs/jquery-ui/jquery-ui.min.js"></script>
+<script src="libs/three.js/build/three.min.js"></script>
+<script src="libs/other/BinaryHeap.js"></script>
+<script src="libs/tween/tween.min.js"></script>
+<script src="libs/d3/d3.js"></script>
+<script src="libs/proj4/proj4.js"></script>
+<script src="libs/openlayers3/ol.js"></script>
+<script src="libs/i18next/i18next.js"></script>
+<script src="libs/jstree/jstree.js"></script>
+<script src="libs/potree/potree.js"></script>
+<script src="libs/plasio/js/laslaz.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="assets/cameras.js"></script>
+
+<!-- Bootstrap Layout -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light py-0" style="z-index:100;">
+    <a class="navbar-brand" href="#">
+        <img src="img/logo.png"  height="50px" class="d-inline-block align-top">
+    </a>
+
+    <div class="d-flex justify-content-left nav-item">
+        <span class="navbar-text"><h2>&nbsp Solar Panels</h2></span>
+    </div>
+
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <!--Create class ml-auto for the navbar items you want on the right.-->
+        <ul class="navbar-nav ml-auto" >
+            <!--a simple top bar link-->
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa fa-question-circle fa-lg"></i>&nbsp;<span> Help</span></a>
+            </li>
+            <!--a top bar link which opens the url in a new page-->
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa fa-map fa-lg"></i>&nbsp;<span> Map</span></a>
+            </li>
+            <!--a drop-down menu-->
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" ><i class="fa fa-wrench fa-lg"></i>&nbsp;<span> Share</span></a>
+                <div class="dropdown-menu" >
+                    <!--use font awesome icons-->
+                    <a class="dropdown-item" href="#"> <i class="fa fa-facebook-square"></i> Facebook</a>
+                    <a class="dropdown-item" href="#"> <i class="fa fa-twitter-square"></i> Twitter</a>
+                    <a class="dropdown-item" href="#"> <i class="fa fa-link"></i> Short Url </a>
+                </div>
+            </li>
+
+            <!--use icons in the top bar menu-->
+            <li>
+                <a class="nav-link" href="#"> <i class="fa fa-paint-brush fa-lg"></i>&nbsp;<span> Appearance</span></a>
+            </li>
+            <!--an about page which open the url in a new page-->
+            <li>
+                <a class="nav-link" href="#"> <i class="fa fa-info-circle fa-lg"></i>&nbsp;<span> About</span></a>
+            </li>
+        </ul>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>
+
+<div class="potree_container" style="position: absolute; width: 100%; height: 100%; left: 0px; top: 0px;" >
+    <div id="potree_render_area"></div>
+    <div id="potree_sidebar_container"> </div>
+    <div id="attribution" ><p class="attr">&nbsp Data acquired by Jared Ritchie, Processing and Visualization by Richie Slocum &nbsp</p></div>
+</div>
+
+<script src="js/loadpointcloud.js"></script>
+<script src="js/addCameras.js"></script>
+
 </body>
 </html>

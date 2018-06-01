@@ -1,5 +1,8 @@
 fname = 'G:\www_lidar\pointcloud\solarpanels\03_POSES\opk.txt';
 imagelocation = 'http://research.engr.oregonstate.edu/lidar/pointcloud/solarpanels/';
+IMAGEDIM = [5472 3648];
+FOCAL = 3648.05798;
+
 dat = importdata(fname);
 dname = fileparts(fname);
 names = dat.textdata(3:end);
@@ -62,6 +65,10 @@ fprintf(fid,'%.3f];\n',pitch(end));
 fprintf(fid,'var camYaw=[');
 fprintf(fid,'%.3f,',yaw(1:end-1));
 fprintf(fid,'%.3f];\n',yaw(end));
+
+fprintf(fid,'var camFocal=%.2f;\n',FOCAL);
+
+fprintf(fid,'var camPix=[%.0f,%.0f];\n',IMAGEDIM);
 
 fclose(fid);
 

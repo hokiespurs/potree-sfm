@@ -72,8 +72,13 @@
             </li>
 
             <!--use icons in the top bar menu-->
-            <li>
-                <a class="nav-link" href="#"> <i class="fa fa-paint-brush fa-lg"></i>&nbsp;<span> Appearance</span></a>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" > <i class="fa fa-paint-brush fa-lg"></i>&nbsp;<span> Appearance</span></a>
+                <div class="dropdown-menu" >
+                    <!--use font awesome icons-->
+                    <a class="dropdown-item" href="#"><button type="button" class="btn btn-primary" id="togglecam"><i class="fa fa-camera"></i> Toggle Cameras</button></a>
+                    <a class="dropdown-item" href="#"><button type="button" class="btn btn-primary" id="toggleimageplane"><i class="fa fa-camera"></i> Toggle Image Overlay</button></a>
+                </div>
             </li>
             <!--an about page which open the url in a new page-->
             <li>
@@ -88,12 +93,34 @@
 
 <div class="potree_container" style="position: absolute; width: 100%; height: 100%; left: 0px; top: 0px;" >
     <div id="potree_render_area"></div>
-    <div id="potree_sidebar_container"> </div>
+    <div id="btnappearance" class="btn-group">
+
+    </div>
     <div id="attribution" ><p class="attr">&nbsp Data acquired by Jared Ritchie, Processing and Visualization by Richie Slocum &nbsp</p></div>
 </div>
 
 <script src="js/loadpointcloud.js"></script>
 <script src="js/addCameras.js"></script>
+<script>
+    $('#togglecam').on('click', function (e) {
+        if(!$('#togglecam').hasClass('disabled')){
+            toggleImagesVisible();
+        }
+    });
+
+    $('#toggleimageplane').on('click', function (e) {
+        if(!$('#toggleimageplane').hasClass('disabled')){
+            imageplane.visible = !imageplane.visible;
+        }
+    });
+
+    // TEST DATA
+    var testcamnum = 50;
+
+
+
+</script>
+
 
 </body>
 </html>

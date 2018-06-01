@@ -7175,8 +7175,8 @@ Potree.FirstPersonControls = class FirstPersonControls extends THREE.EventDispat
 		this.scene = null;
 		this.sceneControls = new THREE.Scene();
 
-		this.rotationSpeed = 200;
-		this.moveSpeed = 10;
+		this.rotationSpeed = 100;
+		this.moveSpeed = 0;
 		this.lockElevation = false;
 
 		this.keys = {
@@ -7227,19 +7227,20 @@ Potree.FirstPersonControls = class FirstPersonControls extends THREE.EventDispat
 			this.dispatchEvent({type: 'end'});
 		};
 
-		let scroll = (e) => {
-			let speed = this.viewer.getMoveSpeed();
+        let scroll = (e) => {
+            let myfov = this.viewer.getFOV();
 
-			if (e.delta < 0) {
-				speed = speed * 0.9;
-			} else if (e.delta > 0) {
-				speed = speed / 0.9;
-			}
+            if (e.delta < 0) {
+                myfov = myfov + 5;
+            } else if (e.delta > 0) {
+                myfov = myfov - 5;
+            }
 
-			speed = Math.max(speed, 0.1);
+            myfov = Math.max(myfov, 5);
+            myfov = Math.min(myfov, 160);
 
-			this.viewer.setMoveSpeed(speed);
-		};
+            this.viewer.setFOV(myfov);
+        };
 
 		let dblclick = (e) => {
 			this.zoomToLocation(e.mouse);
@@ -7418,7 +7419,7 @@ Potree.FirstPersonControls = class FirstPersonControls extends THREE.EventDispat
 		}
 
 		{ // decelerate over time
-			let attenuation = Math.max(0, 1 - this.fadeFactor * delta);
+			let attenuation = 0;//Math.max(0, 1 - this.fadeFactor * delta);
 			this.yawDelta *= attenuation;
 			this.pitchDelta *= attenuation;
 			this.translationDelta.multiplyScalar(attenuation);

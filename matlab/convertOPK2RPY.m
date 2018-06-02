@@ -45,9 +45,9 @@ Rx = yaw+pi;
 Ry = -pitch;
 Rz = -roll;
 
-Rx(Rx>180)=Rx(Rx>180)-360;
-Ry(Ry>180)=Ry(Ry>180)-360;
-Rz(Rz>180)=Rz(Rz>180)-360;
+Rx(Rx>pi)=Rx(Rx>pi)-(2*pi);
+Ry(Ry>pi)=Ry(Ry>pi)-(2*pi);
+Rz(Rz>pi)=Rz(Rz>pi)-(2*pi);
 
 roll  = Rx;
 pitch = Ry;

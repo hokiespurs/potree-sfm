@@ -9,3 +9,20 @@
 .attr{
      color: black;
  }
+
+.buttonbg{
+    color: #6c757d
+}
+
+.buttonfg{
+    color: #f8f9fa;
+}
+.buttonfgclicked{
+    color: #28a745
+}
+
+.cameranumber{
+    margin-top: 1.52em;
+    font-size: 10px;
+    color: #f8f9fa;
+}

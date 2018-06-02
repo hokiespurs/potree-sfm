@@ -2,16 +2,18 @@
 var mouse = {x: 0, y: 0};
 var INTERSECTED = null;
 var camsvisible = true;
+var cameraplaneview = false;
 var lastXYZ = [0,0,0];
 var raycaster = new THREE.Raycaster();
 var wantcamsvisible = true;
-
+var currentid = 0;
+var ncams = camX.length;
 // when the mouse moves, call the given function
 document.addEventListener('mousemove', onDocumentMouseMove, false);
 document.addEventListener('click', onDocumentMouseClick, false);
 
 // ADD PYRAMIDS TO SCENE
-ncams = camX.length;
+
 var imageobj = Array(ncams);
 for(var imagenum=0;imagenum<ncams;imagenum++){
     imageobj[imagenum]=makeImageFrustrum(camdir+'02_THUMBNAILS/',camname[imagenum],camRoll[imagenum],camPitch[imagenum],camYaw[imagenum],camX[imagenum],camY[imagenum],camZ[imagenum]);
@@ -160,6 +162,11 @@ function flyToCam(id){
         $('#toggleimageplane').removeClass('disabled');
         $('#togglecam').addClass('disabled');
         turnImagesOff();
+        currentid = id;
+        cameraplaneview = true;
+        camsvisible = true;
+        $('#btnimagenum').text(id.toString());
+        $('#cameraicon').addClass('buttonfgclicked');
     }
     else{
         console.log(id.toString() + 'Out of Range (Max = ' + camX.length.toString() + ')')
@@ -171,9 +178,20 @@ function turnImagesOff(){
     if(camsvisible){
         let nimages = imageobj.length;
         let j=0;
-        camsvisible = !camsvisible;
+        camsvisible = false;
         for(j=0;j<nimages;j++){
-            imageobj[j].visible=camsvisible;
+            imageobj[j].visible=false;
+        }
+    }
+}
+
+function turnImagesOn(){
+    if(!imageobj[0].visible){
+        let nimages = imageobj.length;
+        let j=0;
+        camsvisible = true;
+        for(j=0;j<nimages;j++){
+            imageobj[j].visible=true;
         }
     }
 }
@@ -192,9 +210,20 @@ function moveCamera(id) {
     viewer.scene.view.position.x = camX[id];
     viewer.scene.view.position.y = camY[id];
     viewer.scene.view.position.z = camZ[id];
-    viewer.scene.view.pitch = (camRoll[id] -90)* Math.PI/180;
-    viewer.scene.view.yaw = camYaw[id] * Math.PI/180;
-    viewer.fpControls.stop();
+
+    let a = new THREE.Euler(camRoll[id]*Math.PI/180,camPitch[id]*Math.PI/180,camYaw[id]*Math.PI/180,'XYZ');
+    let b = new THREE.Vector3( 0, 0, -1 );
+    b.applyEuler(a);
+    b.x = b.x + camX[id];
+    b.y = b.y + camY[id];
+    b.z = b.z + camZ[id];
+
+    //var lookatpt = [camX[id]+b.x, camY[id]+b.y, camZ[id]+b.z];
+    viewer.scene.view.lookAt(b);
+
+    // viewer.scene.view.pitch = (camRoll[id] -90)* Math.PI/180;
+    // viewer.scene.view.yaw = camYaw[id] * Math.PI/180;
+    // viewer.fpControls.stop();
 }
 
 function changeCameraOrientation(pitch,yaw){
@@ -214,18 +243,14 @@ function changetoOrbitmode() {
 // CHECK TO SEE IF CAMERA HAS MOVED. IF YES, GET OUT OF FIRST PERSON VIEW AND REMOVE CAMERA PLANE
 function checkMovement(){
     //only check if imageplane is visible
-    if (imageplane.visible==true){
+    if (cameraplaneview){
         var currentXYZ = getCurrentPos();
         if(currentXYZ[0]!=lastXYZ[0] || currentXYZ[0]!=lastXYZ[0] || currentXYZ[0]!=lastXYZ[0]){
             imageplane.visible=false;
-            $('#toggleimageplane').addClass('disabled');
-            $('#togglecam').removeClass('disabled');
+            cameraplaneview = false;
             changetoflymode();
-            console.log('MOVED')
-            console.log(currentXYZ);
-            console.log(lastXYZ);
-            if (wantcamsvisible && !camsvisible){
-                toggleImagesVisible();
+            if (camsvisible){
+                turnImagesOn();
             }
         }
     }

@@ -59,7 +59,29 @@
         <ul class="navbar-nav ml-auto" >
             <!--a simple top bar link-->
             <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa fa-question-circle fa-lg"></i>&nbsp;<span> Help</span></a>
+                <a class="nav-link" href="#" id="imgleft">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-square fa-stack-2x buttonbg"></i>
+                        <i class="fa fa-arrow-left fa-stack-1x buttonfg"></i>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="toggleimage">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-square fa-stack-2x buttonbg"></i>
+                        <i id="cameraicon" class="fa fa-camera fa-stack-1x buttonfg buttonfgclicked"></i>
+                        <strong class="fa-stack-1x cameranumber" id="btnimagenum">0</strong>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="imgright">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-square fa-stack-2x buttonbg"></i>
+                        <i class="fa fa-arrow-right fa-stack-1x buttonfg"></i>
+                    </span>
+                </a>
             </li>
             <!--a top bar link which opens the url in a new page-->
             <li class="nav-item">
@@ -79,11 +101,6 @@
             <!--use icons in the top bar menu-->
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" > <i class="fa fa-paint-brush fa-lg"></i>&nbsp;<span> Appearance</span></a>
-                <div class="dropdown-menu" >
-                    <!--use font awesome icons-->
-                    <a class="dropdown-item" href="#"><button type="button" class="btn btn-primary" id="togglecam"><i class="fa fa-camera"></i> Toggle Cameras</button></a>
-                    <a class="dropdown-item" href="#"><button type="button" class="btn btn-primary" id="toggleimageplane"><i class="fa fa-camera"></i> Toggle Image Overlay</button></a>
-                </div>
             </li>
             <!--an about page which open the url in a new page-->
             <li>
@@ -108,18 +125,40 @@
 <script src="js/addCameras.js"></script>
 
 <script>
-    $('#togglecam').on('click', function (e) {
-        if(!$('#togglecam').hasClass('disabled')){
-            toggleImagesVisible();
+    $('#toggleimage').on('click', function (e) {
+        if(camsvisible){
+            if (cameraplaneview) {
+                imageplane.visible = false;
+            }
+            else {
+                turnImagesOff();
+            }
+            camsvisible = false;
+            $('#cameraicon').removeClass('buttonfgclicked');
+        }
+        else {
+            if (cameraplaneview) {
+                imageplane.visible = true;
+            }
+            else {
+                turnImagesOn();
+            }
+            camsvisible = true;
+            $('#cameraicon').addClass('buttonfgclicked');
         }
     });
 
-    $('#toggleimageplane').on('click', function (e) {
-        if(!$('#toggleimageplane').hasClass('disabled')){
-            imageplane.visible = !imageplane.visible;
-        }
+    $('#imgleft').on('click', function (e) {
+        currentid--;
+        if (currentid<0){currentid=ncams-1;}
+        flyToCam(currentid)
     });
 
+    $('#imgright').on('click', function (e) {
+        currentid++;
+        if (currentid>(ncams-1)){currentid=0;}
+        flyToCam(currentid)
+    });
 </script>
 
 

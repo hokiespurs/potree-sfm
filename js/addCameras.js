@@ -1,11 +1,8 @@
 //GLOBALS
-var projector, mouse = {
-        x: 0,
-        y: 0
-    },
-    INTERSECTED;
+var mouse = {x: 0, y: 0};
+var INTERSECTED = null;
 var camsvisible = true;
-// initialize object to perform world/screen calculations
+var lastXYZ = [0,0,0];
 var raycaster = new THREE.Raycaster();
 var wantcamsvisible = true;
 
@@ -13,7 +10,7 @@ var wantcamsvisible = true;
 document.addEventListener('mousemove', onDocumentMouseMove, false);
 document.addEventListener('click', onDocumentMouseClick, false);
 
-//
+// ADD PYRAMIDS TO SCENE
 ncams = camX.length;
 var imageobj = Array(ncams);
 for(var imagenum=0;imagenum<ncams;imagenum++){
@@ -21,13 +18,14 @@ for(var imagenum=0;imagenum<ncams;imagenum++){
     imageobj[imagenum].myimagenum = imagenum;
     viewer.scene.scene.add(imageobj[imagenum]);
 }
+// ADD IMAGE PLANE TO SCENE AS INVISIBLE
 var imageplane = makeImagePlane(camdir+'02_THUMBNAILS/',camname[0],camRoll[0],camPitch[0],camYaw[0],camX[0],camY[0],camZ[0]);
 viewer.scene.scene.add(imageplane);
 imageplane.visible = false;
 
 //checks if user moved the screen, and therefore imageplane should be turned off
 setInterval(checkMovement, 500);
-var lastXYZ = [0,0,0];
+
 
 function makeImageFrustrum(imagedir,imagename,Rx,Ry,Rz,Cx,Cy,Cz){
     // instantiate a loader
@@ -78,19 +76,14 @@ function makeImageFrustrum(imagedir,imagename,Rx,Ry,Rz,Cx,Cy,Cz){
     imagepyramid.position.x = Cx;
     imagepyramid.position.y = Cy;
     imagepyramid.position.z = Cz;
-    imagepyramid.rotation.z = Rz*Math.PI/180;
 
-    if(Rz<0) {
-        imagepyramid.rotation.x = Ry * Math.PI / 180;
-        imagepyramid.rotation.y = -Rx*Math.PI/180;
-    }
-    else {
-        imagepyramid.rotation.x = -Ry * Math.PI / 180;
-        imagepyramid.rotation.y = Rx*Math.PI/180;
-    }
-    imagepyramid.scale.x = 6;
-    imagepyramid.scale.y = 6;
-    imagepyramid.scale.z = 6;
+    imagepyramid.rotation.x = Rx * Math.PI/180;
+    imagepyramid.rotation.y = Ry * Math.PI/180;
+    imagepyramid.rotation.z = Rz * Math.PI/180;
+
+    imagepyramid.scale.x = SCALEIMG;
+    imagepyramid.scale.y = SCALEIMG;
+    imagepyramid.scale.z = SCALEIMG;
 
     return imagepyramid
 }
@@ -117,23 +110,6 @@ function makeImagePlane(imagedir,imagename,Rx,Ry,Rz,Cx,Cy,Cz) {
 
     imagepyramid.add(image);
 
-    imagepyramid.position.x = Cx;
-    imagepyramid.position.y = Cy;
-    imagepyramid.position.z = Cz;
-    imagepyramid.rotation.z = Rz*Math.PI/180;
-
-    if(Rz<0) {
-        imagepyramid.rotation.x = Ry * Math.PI / 180;
-        imagepyramid.rotation.y = -Rx*Math.PI/180;
-    }
-    else {
-        imagepyramid.rotation.x = -Ry * Math.PI / 180;
-        imagepyramid.rotation.y = Rx*Math.PI/180;
-    }
-    imagepyramid.scale.x = 6;
-    imagepyramid.scale.y = 6;
-    imagepyramid.scale.z = 6;
-
     imagepyramid.children[0].material.opacity = 1;
     imagepyramid.children[0].material.transparent  = true;
     return imagepyramid
@@ -154,21 +130,23 @@ function changeImagePlane(id) {
     imageplane.position.x = Cx;
     imageplane.position.y = Cy;
     imageplane.position.z = Cz;
-    imageplane.rotation.z = Rz*Math.PI/180;
 
-    if(Rz<0) {
-        imageplane.rotation.x = Ry * Math.PI / 180;
-        imageplane.rotation.y = -Rx*Math.PI/180;
-    }
-    else {
-        imageplane.rotation.x = -Ry * Math.PI / 180;
-        imageplane.rotation.y = Rx*Math.PI/180;
-    }
-    imageplane.scale.x = 6;
-    imageplane.scale.y = 6;
-    imageplane.scale.z = 6;
+    imageplane.rotation.x = Rx * Math.PI/180;
+    imageplane.rotation.y = Ry * Math.PI/180;
+    imageplane.rotation.z = Rz * Math.PI/180;
+
+    console.log(Rx.toString() + ' | ' + Ry.toString() + ' | ' + Rz.toString());
+    imageplane.scale.x = SCALEIMG;
+    imageplane.scale.y = SCALEIMG;
+    imageplane.scale.z = SCALEIMG;
 
     imageplane.visible = true;
+}
+//Useful for debugging
+function changeImagePlaneOrientation(Rx,Ry,Rz){
+    imageplane.rotation.x = Rx * Math.PI/180;
+    imageplane.rotation.y = Ry * Math.PI/180;
+    imageplane.rotation.z = Rz * Math.PI/180;
 }
 
 function flyToCam(id){
@@ -191,8 +169,8 @@ function flyToCam(id){
 
 function turnImagesOff(){
     if(camsvisible){
-        var nimages = imageobj.length;
-        var j=0;
+        let nimages = imageobj.length;
+        let j=0;
         camsvisible = !camsvisible;
         for(j=0;j<nimages;j++){
             imageobj[j].visible=camsvisible;
@@ -201,8 +179,8 @@ function turnImagesOff(){
 }
 
 function toggleImagesVisible(){
-    var nimages = imageobj.length;
-    var j=0;
+    let nimages = imageobj.length;
+    let j=0;
     camsvisible = !camsvisible;
     for(j=0;j<nimages;j++){
         imageobj[j].visible=camsvisible;
@@ -214,12 +192,16 @@ function moveCamera(id) {
     viewer.scene.view.position.x = camX[id];
     viewer.scene.view.position.y = camY[id];
     viewer.scene.view.position.z = camZ[id];
-    //viewer.scene.view.roll = camRoll[id];
-    viewer.scene.view.pitch = (camPitch[id] -90)* Math.PI/180;
+    viewer.scene.view.pitch = (camRoll[id] -90)* Math.PI/180;
     viewer.scene.view.yaw = camYaw[id] * Math.PI/180;
     viewer.fpControls.stop();
 }
 
+function changeCameraOrientation(pitch,yaw){
+    viewer.scene.view.pitch = pitch * Math.PI/180;
+    viewer.scene.view.yaw = yaw * Math.PI/180;
+}
+// CHANGE CAMERA MODE
 function changetoflymode() {
     viewer.setNavigationMode(Potree.OrbitControls);
 }
@@ -229,6 +211,7 @@ function changetoOrbitmode() {
     viewer.fpControls.lockElevation = true;
 }
 
+// CHECK TO SEE IF CAMERA HAS MOVED. IF YES, GET OUT OF FIRST PERSON VIEW AND REMOVE CAMERA PLANE
 function checkMovement(){
     //only check if imageplane is visible
     if (imageplane.visible==true){
@@ -249,6 +232,7 @@ function checkMovement(){
 
 }
 
+// RETURN CURRENT CAMERA POSITION [X, Y, Z]
 function getCurrentPos(){
     var ixyz = [Math.round(viewer.scene.view.position.x*100)/100,
                 Math.round(viewer.scene.view.position.y*100)/100,
@@ -256,6 +240,7 @@ function getCurrentPos(){
     return ixyz;
 }
 
+// HANDLE MOUSE OVER PYRAMIDS
 function onDocumentMouseMove(event) {
     // the following line would stop any other event handler from firing
     // (such as the mouse's TrackballControls)
@@ -266,6 +251,7 @@ function onDocumentMouseMove(event) {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     checkIntersections();
 }
+
 function onDocumentMouseClick(event) {
     raycaster.setFromCamera( mouse, viewer.scene.cameraP );
 

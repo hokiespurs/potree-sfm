@@ -35,7 +35,13 @@
 <script src="libs/plasio/js/laslaz.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-<script src="assets/cameras.js"></script>
+<script src="assets/03_POSES/cameras.js"></script>
+
+<script>
+    let pageTitle='Solar Panels';
+    let dataAttribution='Data acquired by Jared Ritchie, Processing and Visualization by Richie Slocum';
+    let SCALEIMG = 3;
+</script>
 
 <!-- Bootstrap Layout -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light py-0" style="z-index:100;">
@@ -44,9 +50,8 @@
     </a>
 
     <div class="d-flex justify-content-left nav-item">
-        <span class="navbar-text"><h2>&nbsp Solar Panels</h2></span>
+        <span class="navbar-text"><h2>&nbsp Divi Carina Resort, USVI</h2></span>
     </div>
-
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -96,11 +101,12 @@
     <div id="btnappearance" class="btn-group">
 
     </div>
-    <div id="attribution" ><p class="attr">&nbsp Data acquired by Jared Ritchie, Processing and Visualization by Richie Slocum &nbsp</p></div>
+    <div id="attribution" ><p class="attr">&nbsp Data acquisition and processing by Chase Simpson and Richie Slocum, Visualization by Richie Slocum &nbsp</p></div>
 </div>
 
 <script src="js/loadpointcloud.js"></script>
 <script src="js/addCameras.js"></script>
+
 <script>
     $('#togglecam').on('click', function (e) {
         if(!$('#togglecam').hasClass('disabled')){
@@ -113,11 +119,6 @@
             imageplane.visible = !imageplane.visible;
         }
     });
-
-    // TEST DATA
-    var testcamnum = 50;
-
-
 
 </script>
 

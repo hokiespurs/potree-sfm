@@ -1,10 +1,15 @@
-fname = 'G:\www_lidar\pointcloud\solarpanels\03_POSES\opk.txt';
-imagelocation = 'http://research.engr.oregonstate.edu/lidar/pointcloud/solarpanels/';
-IMAGEDIM = [5472 3648];
-FOCAL = 3648.05798;
+% fname = 'G:\www_lidar\pointcloud\solarpanels\03_POSES\opk.txt';
+% imagelocation = 'http://research.engr.oregonstate.edu/lidar/pointcloud/solarpanels/';
+%IMAGEDIM = [5472 3648];
+%FOCAL = 3648.05798;
+FNAME = 'G:\www_lidar\pointcloud\divicarina\assets\03_POSES\opk.txt';
+IMAGELOCATION = 'http://research.engr.oregonstate.edu/lidar/pointcloud/divicarina/assets/';
+FOCAL = 3093.95123;
+IMAGEDIM = [4000 3000];
 
-dat = importdata(fname);
-dname = fileparts(fname);
+
+dat = importdata(FNAME);
+dname = fileparts(FNAME);
 names = dat.textdata(3:end);
 Xc = dat.data(:,1);
 Yc = dat.data(:,2);
@@ -30,13 +35,30 @@ R(3,1,:) = r31;
 R(3,2,:) = r32;
 R(3,3,:) = r33;
 
-[yaw,pitch,roll]=dcm2angle(R,'zyx');
+for i=1:numel(r11)
+   R(:,:,i)= diag([1,-1,-1])*R(:,:,i);
+end
+
+[yaw,pitch,roll]=dcm2angle(R,'xyz');
+
+Rx = yaw+pi;
+Ry = -pitch;
+Rz = -roll;
+
+Rx(Rx>180)=Rx(Rx>180)-360;
+Ry(Ry>180)=Ry(Ry>180)-360;
+Rz(Rz>180)=Rz(Rz>180)-360;
+
+roll  = Rx;
+pitch = Ry;
+yaw   = Rz;
+
 roll = roll*180/pi;
 pitch = pitch*180/pi;
 yaw = yaw*180/pi;
 
 fid = fopen([dname '/cameras.js'],'w+t');
-fprintf(fid,'var camdir=''%s'';\n',imagelocation);
+fprintf(fid,'var camdir=''%s'';\n',IMAGELOCATION);
 
 fprintf(fid,'var camname=[');
 fprintf(fid,'''%s'',',names{1:end-1});
@@ -73,12 +95,12 @@ fprintf(fid,'var camPix=[%.0f,%.0f];\n',IMAGEDIM);
 fclose(fid);
 
 figure(1)
-subplot(3,1,1);
+subplot(3,1,1);hold on
 plot(roll)
 
-subplot(3,1,2);
+subplot(3,1,2);hold on
 plot(pitch)
 
-subplot(3,1,3);
+subplot(3,1,3);hold on
 plot(yaw)
 

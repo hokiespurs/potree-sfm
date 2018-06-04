@@ -1,16 +1,18 @@
 //GLOBALS
-var mouse = {x: 0, y: 0};
+var mouse = {x: 0, y: 0, doUse: false};
 var INTERSECTED = null;
 var camsvisible = true;
 var cameraplaneview = false;
 var lastXYZ = [0,0,0];
 var raycaster = new THREE.Raycaster();
 var wantcamsvisible = true;
-var currentid = 0;
 var ncams = camX.length;
+var currentid = ncams-1;
+let measuringTool = new Potree.MeasuringTool(viewer);
+var mapshow = true;
 // when the mouse moves, call the given function
 document.addEventListener('mousemove', onDocumentMouseMove, false);
-document.addEventListener('click', onDocumentMouseClick, false);
+document.addEventListener('mousedown', onDocumentMouseClick, false);
 
 // ADD PYRAMIDS TO SCENE
 
@@ -27,6 +29,7 @@ imageplane.visible = false;
 
 //checks if user moved the screen, and therefore imageplane should be turned off
 setInterval(checkMovement, 500);
+setInterval(cameraOnMap, 100);
 
 
 function makeImageFrustrum(imagedir,imagename,Rx,Ry,Rz,Cx,Cy,Cz){
@@ -274,48 +277,113 @@ function onDocumentMouseMove(event) {
     // update the mouse variable
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    var elementType="";
+    try {
+        elementType = document.elementFromPoint(event.clientX, event.clientY).tagName;
+    }
+    catch(err) {
+        elementType = "ERROR";
+    }
+
+    mouse.doUse = elementType=='CANVAS';
     checkIntersections();
 }
 
 function onDocumentMouseClick(event) {
-    raycaster.setFromCamera( mouse, viewer.scene.cameraP );
+    if (mouse.doUse) {
+        raycaster.setFromCamera(mouse, viewer.scene.cameraP);
 
-    // calculate objects intersecting the picking ray
-    var intersects = raycaster.intersectObjects( viewer.scene.scene.children, true);
-    for ( var i = 0; i < intersects.length; i++ ) {
-        if (intersects[i].object.geometry.vertices.length==5){
-            flytoimagenum = intersects[i].object.parent.myimagenum;
-            flyToCam(flytoimagenum);
+        // calculate objects intersecting the picking ray
+        var intersects = raycaster.intersectObjects(viewer.scene.scene.children, true);
+        for (var i = 0; i < intersects.length; i++) {
+            if (intersects[i].object.geometry.vertices.length == 5) {
+                flytoimagenum = intersects[i].object.parent.myimagenum;
+                flyToCam(flytoimagenum);
+            }
         }
     }
 }
 
 function checkIntersections() {
+    if (mouse.doUse) {
+        raycaster.setFromCamera(mouse, viewer.scene.cameraP);
 
-    raycaster.setFromCamera(mouse, viewer.scene.cameraP);
+        // calculate objects intersecting the picking ray
+        var intersects = raycaster.intersectObjects(viewer.scene.scene.children, true);
+        if (intersects.length > 0) {
+            var dist2obj = 99999;
+            for (var i = 0; i < intersects.length; i++) { //for each intersected object
+                if (intersects[i].object.geometry.vertices.length == 5) { // see if it has 5 vertices (pyramid)
+                    if (intersects[i].distance < dist2obj) { // if it does, see if it's closer than the last distance
+                        dist2obj = intersects[i].distance;
+                        if (INTERSECTED != intersects[i].object) { //if it isnt the previous object
+                            if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex); //change the old one back
 
-    // calculate objects intersecting the picking ray
-    var intersects = raycaster.intersectObjects(viewer.scene.scene.children, true);
-    if (intersects.length > 0) {
-        var dist2obj = 99999;
-        for (var i = 0; i < intersects.length; i++) { //for each intersected object
-            if (intersects[i].object.geometry.vertices.length == 5) { // see if it has 5 vertices (pyramid)
-                if (intersects[i].distance<dist2obj){ // if it does, see if it's closer than the last distance
-                    dist2obj = intersects[i].distance;
-                    if (INTERSECTED != intersects[ i ].object) { //if it isnt the previous object
-                        if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex ); //change the old one back
-
-                        INTERSECTED = intersects[i].object; //make this the new one
-                        INTERSECTED.currentHex = INTERSECTED.material.color.getHex(); //get its color
-                        intersects[i].object.material.color.set(0xff0000); //change it's color
+                            INTERSECTED = intersects[i].object; //make this the new one
+                            INTERSECTED.currentHex = INTERSECTED.material.color.getHex(); //get its color
+                            intersects[i].object.material.color.set(0xff0000); //change it's color
+                        }
                     }
                 }
             }
         }
+        else {
+            if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
+            INTERSECTED = null;
+        }
+        //renderer.render( scene, camera );
     }
     else {
-        if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+        if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
         INTERSECTED = null;
     }
-    //renderer.render( scene, camera );
+}
+
+//MEASUREMENT FUNCTIONS
+function measPoint(){
+    let measurement = measuringTool.startInsertion({
+        showDistances: false,
+        showAngles: false,
+        showCoordinates: true,
+        showArea: false,
+        closed: true,
+        maxMarkers: 1,
+        name: 'Point'});
+}
+
+function measDistance(){
+    let measurement = measuringTool.startInsertion({
+        showDistances: true,
+        showArea: false,
+        closed: false,
+        name: 'Distance'});
+}
+
+function measHeight(){
+    let measurement = measuringTool.startInsertion({
+        showDistances: false,
+        showHeight: true,
+        showArea: false,
+        closed: false,
+        maxMarkers: 2,
+        name: 'Height'});
+}
+
+function measAngle(){
+    let measurement = measuringTool.startInsertion({
+        showDistances: false,
+        showAngles: true,
+        showArea: false,
+        closed: true,
+        maxMarkers: 3,
+        name: 'Angle'});
+}
+
+function measClear(){
+    viewer.scene.removeAllMeasurements();
+}
+
+function cameraOnMap(){
+    console.log('Camera on Leaflet Map: todo')
+
 }

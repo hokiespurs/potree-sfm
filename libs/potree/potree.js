@@ -7237,7 +7237,7 @@ Potree.FirstPersonControls = class FirstPersonControls extends THREE.EventDispat
             }
 
             myfov = Math.max(myfov, 5);
-            myfov = Math.min(myfov, 160);
+            myfov = Math.min(myfov, 120);
 
             this.viewer.setFOV(myfov);
         };
@@ -20094,8 +20094,6 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 		return message;
 	}
 };
-
-
 
 class ProfilePointCloudEntry{
 

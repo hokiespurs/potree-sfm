@@ -260,12 +260,11 @@ function checkMovement(){
         var currentXYZ = getCurrentPos();
         if(currentXYZ[0]!=lastXYZ[0] || currentXYZ[0]!=lastXYZ[0] || currentXYZ[0]!=lastXYZ[0]){
             imageplane.visible=false;
-            cameraplaneview = false;
             changetoflymode();
-            if (camsvisible){
+            if (camsvisible | cameraplaneview){
                 turnImagesOn();
-
             }
+            cameraplaneview = false;
         }
     }
 

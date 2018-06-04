@@ -395,12 +395,28 @@
         if (dofilterimages){
             dofilterimages = false;
             turnImagesOn();
-            if (cameraplaneview){turnImagesOff();}
+            if (!camsvisible){
+                turnImagesOff();
+            }
+            else {
+                turnImagesOff();
+                $('#cameraicon').addClass('buttonfgclicked');
+            }
             $('#filterbtn').removeClass('buttonfgclicked');
         }
         else {
             dofilterimages = true;
             filterImages();
+            if (cameraplaneview){
+                if (!camsvisible){
+                    turnImagesOff();
+                }
+                else {
+                    turnImagesOff();
+                    $('#cameraicon').addClass('buttonfgclicked');
+                }
+
+            }
             $('#filterbtn').addClass('buttonfgclicked');
         }
     }

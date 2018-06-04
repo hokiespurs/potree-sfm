@@ -1,6 +1,6 @@
 var mymap = L.map('leafletmap', {
     center: [17.7415, -64.6058],
-    zoom: 18,
+    zoom: 17,
     maxZoom: 23,
     minZoom: 13,
     detectRetina: true, // detect whether the sceen is high resolution or not.
@@ -11,7 +11,8 @@ var mybounds = [[17.73983749443577, -64.60716784000398],[17.743189189581507, -64
 
 // Add Basemap
 //L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(mymap);
-L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+// L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
     minZoom: 10,
     maxNativeZoom: 21,
     maxZoom: 23,

@@ -110,15 +110,18 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <!--use font awesome icons-->
-                    <a class="dropdown-item navbar-text" href="#"> <strong><span class="fa-stack fa-lg">
+                    <a id="measheader" class="dropdown-item navbar-text" href="#"> <strong><span class="fa-stack fa-lg">
                         <i class="fa fa-square fa-stack-2x buttonbg"></i>
                         <i class="fa fa-wrench fa-stack-1x buttonfg"></i>
                     </span>Measurements</strong> </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item navbar-text" href="#" id="measPoint"> <i class="fa fa-crosshairs fa-fw fa-lg"></i> Point </a>
+                    <a class="dropdown-item navbar-text" href="#" id="measPoint"> <i class="fa fa-bullseye fa-fw fa-lg"></i> Point </a>
                     <a class="dropdown-item navbar-text" href="#" id="measDistance"> <i class="fa fa-arrows-h fa-fw fa-lg"></i> Distance </a>
                     <a class="dropdown-item navbar-text" href="#" id="measHeight"> <i class="fa fa-arrows-v fa-fw fa-lg"></i> Height </a>
                     <a class="dropdown-item navbar-text" href="#" id="measAngle"> <i class="fa fa-share-alt fa-fw fa-lg"></i> Angle </a>
+                    <a class="dropdown-item navbar-text" href="#" id="measLookAt"> <i id="lookatbtn" class="fa fa-crosshairs fa-fw fa-lg"></i> Look At </a>
+                    <a class="dropdown-item navbar-text" href="#" id="lookAtFilter"> &nbsp &nbsp <i id="filterbtn" class="fa fa-filter fa-fw fa-lg"></i> Filter Images </a>
+                    <a class="dropdown-item navbar-text" href="#" id="toggleLookAtPtVisible"> &nbsp &nbsp <i id="lookatvisible" class="fa fa-circle fa-fw fa-lg buttonfgclicked"></i> Visible Point </a>
                     <a class="dropdown-item navbar-text" href="#" id="measClear"> <i class="fa fa-close fa-fw fa-lg"></i> Clear </a>
                 </div>
             </li>
@@ -132,15 +135,24 @@
                     </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right" >
-                    <li><a class="dropdown-item navbar-text" href="#"> <strong>
+                    <li id="appearanceheader"><a class="dropdown-item navbar-text" href="#"> <strong>
                         <span class="fa-stack fa-lg">
                         <i class="fa fa-square fa-stack-2x buttonbg"></i>
                         <i class="fa fa-paint-brush fa-stack-1x buttonfg"></i>
-                    </span>
+                        </span>
                         Appearance</strong> </a></li>
                     <li><div class="dropdown-divider"></div></li>
-                    <li><a id="btntogglelighting" class="dropdown-item navbar-text" href="#"> Turn Lighting ON</a></li>
-                    <li><a id="btntoggleHQ" class="dropdown-item navbar-text" href="#"> Turn HQ Points ON</a></li>
+                    <li><a id="btntogglelighting" class="dropdown-item navbar-text" href="#">
+                        <i id="btnlightbulb" class="fa fa-lightbulb-o fa-fw fa-lg "></i>
+                        Toggle Lighting </a>
+                    </li>
+
+                    <li><a id="btntoggleHQ" class="dropdown-item navbar-text" href="#">
+                        <i id="btnHQ" class="fa fa-star fa-fw fa-lg "></i>
+                        Toggle HQ Points</a>
+                    </li>
+
+
                     <li><div class="dropdown-divider"></div></li>
 
                     <li>
@@ -260,6 +272,8 @@
 
 <script>
     var cmap=Potree.Gradients["RAINBOW"];
+    $('#lookAtFilter').hide();
+    $('#toggleLookAtPtVisible').hide();
 
     $('#toggleimage').on('click', function (e) {
         if(camsvisible){
@@ -286,14 +300,54 @@
 
     $('#imgleft').on('click', function (e) {
         currentid--;
-        if (currentid<0){currentid=ncams-1;}
-        flyToCam(currentid)
+        if (currentid < 0) {
+            currentid = ncams - 1;
+        }
+        var count=0;
+        var flag = true;
+        if (dofilterimages) {
+            while (imageobj[currentid].isFiltered) {
+                currentid--;
+                count++;
+                if (currentid < 0) {
+                    currentid = ncams - 1;
+                }
+                if (count > ncams) {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        if (flag) {
+            flyToCam(currentid);
+        }
     });
 
     $('#imgright').on('click', function (e) {
+
         currentid++;
         if (currentid>(ncams-1)){currentid=0;}
-        flyToCam(currentid)
+
+        var count=0;
+        var flag = true;
+        if (dofilterimages) {
+            while (imageobj[currentid].isFiltered) {
+                currentid++;
+                count++;
+                if (currentid > (ncams - 1)) {
+                    currentid = 0;
+                }
+
+                if (count > ncams) {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        if (flag) {
+            flyToCam(currentid);
+        }
+
     });
 
     $('#measPoint').on('click', measPoint);
@@ -301,6 +355,12 @@
     $('#measHeight').on('click', measHeight);
     $('#measAngle').on('click', measAngle);
     $('#measClear').on('click', measClear);
+    $('#measLookAt').on('click', measLookAt);
+    $('#lookAtFilter').on('click', toggleFilterImages);
+    $('#toggleLookAtPtVisible').on('click', toggleLookAtPtVisible);
+
+
+
     $('#togglemap').on('click', togglemap);
 
     $('#btntogglelighting').on('click', toggleEDL);
@@ -318,14 +378,40 @@
     $('#btnColormap6').on('click', changeColormap);
     $('#btnColormap7').on('click', changeColormap);
 
+
+    function toggleLookAtPtVisible() {
+        if (viewer.scene.measurements[lookAtPtNum].visible){
+            viewer.scene.measurements[lookAtPtNum].visible = false;
+            $('#lookatvisible').removeClass('buttonfgclicked');
+        }
+        else {
+            viewer.scene.measurements[lookAtPtNum].visible = true;
+            $('#lookatvisible').addClass('buttonfgclicked');
+        }
+
+    }
+
+    function toggleFilterImages(){
+        if (dofilterimages){
+            dofilterimages = false;
+            turnImagesOn();
+            if (cameraplaneview){turnImagesOff();}
+            $('#filterbtn').removeClass('buttonfgclicked');
+        }
+        else {
+            dofilterimages = true;
+            filterImages();
+            $('#filterbtn').addClass('buttonfgclicked');
+        }
+    }
     function toggleEDL(){
         if (viewer.useEDL){
             viewer.useEDL = false;
-            $('#btntogglelighting').text("Turn Lighting ON");
+            $('#btnlightbulb').removeClass('buttonfgclicked');
         }
         else {
             viewer.useEDL = true;
-            $('#btntogglelighting').text("Turn Lighting OFF");
+            $('#btnlightbulb').addClass('buttonfgclicked');
 
         }
     }
@@ -333,11 +419,11 @@
     function toggleHQ(){
         if (viewer.useHQ){
             viewer.useHQ = false;
-            $('#btntoggleHQ').text("Turn HQ Points ON");
+            $('#btnHQ').removeClass('buttonfgclicked');
         }
         else {
             viewer.useHQ = true;
-            $('#btntoggleHQ').text("Turn HQ Points OFF");
+            $('#btnHQ').addClass('buttonfgclicked');
         }
     }
 
@@ -411,17 +497,29 @@
 
     $('.keep-open').on({
         "shown.bs.dropdown": function() { $(this).attr('closable', false); },
-        "click":             function() { },
         "hide.bs.dropdown":  function() { return $(this).attr('closable') == 'true'; }
+    });
+
+    $('#measheader').on({
+        "click": function() {
+            $('.keep-open').attr('closable', true );
+            $(this).parent().attr('closable', true );
+        }
+    });
+
+    $('#appearanceheader').on({
+        "click": function() {
+            $('.keep-open').attr('closable', true );
+            $(this).parent().attr('closable', true );
+        }
     });
 
     $('.keep-open .nav-link').on({
         "click": function() {
-            $('.keep-open').attr('closable', true )
+            $('.keep-open').attr('closable', true );
             $(this).parent().attr('closable', true );
-
         }
-    })
+    });
 
     var zlimits = viewer.scene.pointclouds[0].material.elevationRange;
     $( "#minval" ).val( Math.floor(zlimits[0]*10)/10);

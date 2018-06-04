@@ -10,6 +10,8 @@ var ncams = camX.length;
 var currentid = ncams-1;
 let measuringTool = new Potree.MeasuringTool(viewer);
 var mapshow = true;
+var lookAtPtNum = null;
+var dofilterimages = false;
 // when the mouse moves, call the given function
 document.addEventListener('mousemove', onDocumentMouseMove, false);
 document.addEventListener('mousedown', onDocumentMouseClick, false);
@@ -20,6 +22,7 @@ var imageobj = Array(ncams);
 for(var imagenum=0;imagenum<ncams;imagenum++){
     imageobj[imagenum]=makeImageFrustrum(camdir+'02_THUMBNAILS/',camname[imagenum],camRoll[imagenum],camPitch[imagenum],camYaw[imagenum],camX[imagenum],camY[imagenum],camZ[imagenum]);
     imageobj[imagenum].myimagenum = imagenum;
+    imageobj[imagenum].isFiltered = false;
     viewer.scene.scene.add(imageobj[imagenum]);
 }
 // ADD IMAGE PLANE TO SCENE AS INVISIBLE
@@ -170,6 +173,10 @@ function flyToCam(id){
         camsvisible = true;
         $('#btnimagenum').text(id.toString());
         $('#cameraicon').addClass('buttonfgclicked');
+        if (lookAtPtNum!=null){
+            var xyzlookat = viewer.scene.measurements[lookAtPtNum].children[3].getWorldPosition();
+            viewer.scene.view.lookAt(xyzlookat);
+        }
     }
     else{
         console.log(id.toString() + 'Out of Range (Max = ' + camX.length.toString() + ')')
@@ -186,6 +193,7 @@ function turnImagesOff(){
             imageobj[j].visible=false;
         }
     }
+    $('#cameraicon').removeClass('buttonfgclicked');
 }
 
 function turnImagesOn(){
@@ -196,7 +204,9 @@ function turnImagesOn(){
         for(j=0;j<nimages;j++){
             imageobj[j].visible=true;
         }
+        filterImages();
     }
+    $('#cameraicon').addClass('buttonfgclicked');
 }
 
 function toggleImagesVisible(){
@@ -254,6 +264,7 @@ function checkMovement(){
             changetoflymode();
             if (camsvisible){
                 turnImagesOn();
+
             }
         }
     }
@@ -381,9 +392,106 @@ function measAngle(){
 
 function measClear(){
     viewer.scene.removeAllMeasurements();
+    lookAtPtNum = null;
+    dofilterimages = false;
+    $('#filterbtn').removeClass('buttonfgclicked');
+    $('#lookatbtn').removeClass('buttonfgclicked');
+
+    turnImagesOn();
+    if (cameraplaneview){
+        turnImagesOff();
+    }
+
+    $('#lookAtFilter').hide();
+    $('#toggleLookAtPtVisible').hide();
+}
+
+function measLookAt(){
+    if(lookAtPtNum!=null){
+        viewer.scene.measurements[lookAtPtNum].visible= false;
+    }
+    lookAtPtNum = viewer.scene.measurements.length;
+    let measurement = measuringTool.startInsertion({
+        showDistances: false,
+        showAngles: false,
+        showCoordinates: false,
+        showArea: false,
+        closed: true,
+        maxMarkers: 1,
+        name: 'Point'});
+
+    viewer.scene.measurements[lookAtPtNum].children[3].material.color.setRGB(255,0,255);
+    $('#lookAtFilter').show();
+    $('#toggleLookAtPtVisible').show();
+    $('#lookatvisible').addClass('buttonfgclicked');
+    $('#lookatbtn').addClass('buttonfgclicked');
+
+}
+
+function filterImages(){
+    if (lookAtPtNum!=null & dofilterimages == true) {
+        xyzlookat = viewer.scene.measurements[lookAtPtNum].children[3].getWorldPosition();
+
+        var Xw = xyzlookat.x;
+        var Yw = xyzlookat.y;
+        var Zw = xyzlookat.z;
+
+        let testid = 1080;
+        var f = camFocal;
+        var cx = camPix[0] / 2;
+        var cy = camPix[1] / 2;
+
+
+        for (var imagenum = 0; imagenum < ncams; imagenum++) {
+            var Xc = camX[imagenum];
+            var Yc = camY[imagenum];
+            var Zc = camZ[imagenum];
+            var Rx = camRoll[imagenum];
+            var Ry = camPitch[imagenum];
+            var Rz = camYaw[imagenum];
+
+            if (!isptincamera(f, cx, cy, Xc, Yc, Zc, Xw, Yw, Zw, Rx, Ry, Rz)) {
+                imageobj[imagenum].visible = false;
+                imageobj[imagenum].isFiltered = true;
+            }
+            else {
+                imageobj[imagenum].visible = true;
+                imageobj[imagenum].isFiltered = false;
+            }
+        }
+    }
 }
 
 function cameraOnMap(){
     console.log('Camera on Leaflet Map: todo')
 
+}
+
+function isptincamera(f,cx,cy,Xc,Yc,Zc,Xw,Yw,Zw,Rx,Ry,Rz) {
+    // XYZ Euler Order
+    Rx = Rx * Math.PI/180;
+    Ry = Ry * Math.PI/180;
+    Rz = Rz * Math.PI/180;
+
+    var pixx = (Xc*(cx*Math.sin(Ry) + f*Math.cos(Ry)*Math.cos(Rz)) - Xw*(cx*Math.sin(Ry) + f*Math.cos(Ry)*Math.cos(Rz)) + Zc*(f*(Math.sin(Rx)*Math.sin(Rz) - Math.cos(Rx)*Math.cos(Rz)*Math.sin(Ry)) + cx*Math.cos(Rx)*Math.cos(Ry)) - Zw*(f*(Math.sin(Rx)*Math.sin(Rz) - Math.cos(Rx)*Math.cos(Rz)*Math.sin(Ry)) + cx*Math.cos(Rx)*Math.cos(Ry)) + Yc*(f*(Math.cos(Rx)*Math.sin(Rz) + Math.cos(Rz)*Math.sin(Rx)*Math.sin(Ry)) - cx*Math.cos(Ry)*Math.sin(Rx)) - Yw*(f*(Math.cos(Rx)*Math.sin(Rz) + Math.cos(Rz)*Math.sin(Rx)*Math.sin(Ry)) - cx*Math.cos(Ry)*Math.sin(Rx)))/(Xc*Math.sin(Ry) - Xw*Math.sin(Ry) + Zc*Math.cos(Rx)*Math.cos(Ry) - Zw*Math.cos(Rx)*Math.cos(Ry) - Yc*Math.cos(Ry)*Math.sin(Rx) + Yw*Math.cos(Ry)*Math.sin(Rx));
+    var pixy = (Xc*(cy*Math.sin(Ry) - f*Math.cos(Ry)*Math.sin(Rz)) - Xw*(cy*Math.sin(Ry) - f*Math.cos(Ry)*Math.sin(Rz)) + Zc*(f*(Math.cos(Rz)*Math.sin(Rx) + Math.cos(Rx)*Math.sin(Ry)*Math.sin(Rz)) + cy*Math.cos(Rx)*Math.cos(Ry)) - Zw*(f*(Math.cos(Rz)*Math.sin(Rx) + Math.cos(Rx)*Math.sin(Ry)*Math.sin(Rz)) + cy*Math.cos(Rx)*Math.cos(Ry)) + Yc*(f*(Math.cos(Rx)*Math.cos(Rz) - Math.sin(Rx)*Math.sin(Ry)*Math.sin(Rz)) - cy*Math.cos(Ry)*Math.sin(Rx)) - Yw*(f*(Math.cos(Rx)*Math.cos(Rz) - Math.sin(Rx)*Math.sin(Ry)*Math.sin(Rz)) - cy*Math.cos(Ry)*Math.sin(Rx)))/(Xc*Math.sin(Ry) - Xw*Math.sin(Ry) + Zc*Math.cos(Rx)*Math.cos(Ry) - Zw*Math.cos(Rx)*Math.cos(Ry) - Yc*Math.cos(Ry)*Math.sin(Rx) + Yw*Math.cos(Ry)*Math.sin(Rx));
+    var s = Xw*Math.sin(Ry) - Xc*Math.sin(Ry) - Zc*Math.cos(Rx)*Math.cos(Ry) + Zw*Math.cos(Rx)*Math.cos(Ry) + Yc*Math.cos(Ry)*Math.sin(Rx) - Yw*Math.cos(Ry)*Math.sin(Rx)
+
+    let isgood = !(pixx<0 | pixx>(cx*2) | pixy<0 | pixy>(cy*2) | s>0);
+    return isgood
+}
+
+function uv2xyFixedZ(f,cx,cy,Xc,Yc,Zc,Rx,Ry,Rz){
+
+
+    return xyz;
+}
+
+function projected2WGS84(x,y){
+    let pointcloudProjection = e.pointcloud.projection;
+    let mapProjection = proj4.defs("WGS84");
+
+    latlon = proj4(firstProjection,secondProjection,[2,5]);
+
+    return latlon
 }

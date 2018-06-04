@@ -22,6 +22,7 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
 var tiles = L.tileLayer('http://research.engr.oregonstate.edu/lidar/pointcloud/20171107_USVI/googlemaps/DiviCarinaBay_ortho_10mm_googlemaps/{z}/{x}/{y}.png',{
     minZoom: 10,
     maxNativeZoom: 22,
+    minNativeZoom: 18,
     maxZoom: 23,
     noWrap: true,
     bounds: mybounds,
@@ -29,3 +30,32 @@ var tiles = L.tileLayer('http://research.engr.oregonstate.edu/lidar/pointcloud/2
 }).addTo(mymap);
 
 L.control.attribution({position: 'bottomleft'}).addTo(mymap);
+
+var uasmarker=new L.marker([0,0], {
+    draggable: true,
+    icon: L.divIcon({
+        html: '<i class="fa fa-circle "></i>',
+        iconSize: [10, 10],
+        className: 'cammarker'
+    })
+});
+
+uasmarker.on("drag",markerdragged);
+
+var lookatmarker=new L.marker([0,0], {
+    icon: L.divIcon({
+        html: '<i class="fa fa-circle "></i>',
+        iconSize: [10, 10],
+        className: 'camlookatmarker'
+    })
+});
+
+
+var camerafootprintpolygon=new L.Polygon([[0,0],[0,0],[0,0],[0,0]],{color:'orange', weight: 5, className: 'camerafootprint'});
+
+var imagefootprintpolygon=new L.Polygon([[0,0],[0,0],[0,0],[0,0]],{color:'cyan', weight: 5, className: 'imagefootprint'});
+
+uasmarker.addTo(mymap);
+lookatmarker.addTo(mymap);
+camerafootprintpolygon.addTo(mymap);
+imagefootprintpolygon.addTo(mymap);

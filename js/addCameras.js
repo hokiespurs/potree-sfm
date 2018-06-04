@@ -143,7 +143,6 @@ function changeImagePlane(id) {
     imageplane.rotation.y = Ry * Math.PI/180;
     imageplane.rotation.z = Rz * Math.PI/180;
 
-    console.log(Rx.toString() + ' | ' + Ry.toString() + ' | ' + Rz.toString());
     imageplane.scale.x = SCALEIMG;
     imageplane.scale.y = SCALEIMG;
     imageplane.scale.z = SCALEIMG;
@@ -265,6 +264,10 @@ function checkMovement(){
                 turnImagesOn();
             }
             cameraplaneview = false;
+            // fix issue where radius was crazy far away
+            if (viewer.scene.view.radius>50){
+                viewer.scene.view.radius = 50;
+            }
         }
     }
 
@@ -424,7 +427,6 @@ function measLookAt(){
     $('#toggleLookAtPtVisible').show();
     $('#lookatvisible').addClass('buttonfgclicked');
     $('#lookatbtn').addClass('buttonfgclicked');
-
 }
 
 function filterImages(){
@@ -457,13 +459,222 @@ function filterImages(){
                 imageobj[imagenum].visible = true;
                 imageobj[imagenum].isFiltered = false;
             }
+            camsvisible = true;
         }
     }
 }
 
 function cameraOnMap(){
-    console.log('Camera on Leaflet Map: todo')
+    // Add Camera Dot to Map
+    var camerapos = viewer.scene.view.position;
+    var cameraLatLon = projected2WGS84(camerapos.x,camerapos.y);
 
+    uasmarker.setLatLng(cameraLatLon);
+    uasmarker.update();
+    // Get Mean Z of PC to compute plane for footprint
+    let elevationrange = viewer.scene.pointclouds[0].material.elevationRange;
+    var meanZ =  (elevationrange[0] + elevationrange[1])/2;
+    meanZ = elevationrange[0];
+
+    // Add camera Footprint to Map
+    var xyzCamera = getCurrentPos();
+    var campitch = viewer.scene.view.pitch;
+    var camyaw = viewer.scene.view.yaw;
+    var camfcxcy = calcCamerafcxcy();
+    updateFootprintPanTilt(camerafootprintpolygon,xyzCamera[0],xyzCamera[1],xyzCamera[2]-meanZ,camyaw-Math.PI/2,campitch-Math.PI/2,camfcxcy[0],camfcxcy[1],camfcxcy[2]);
+
+    // Add image footprint to Map
+    if (cameraplaneview){
+        updateFootprintRxyz(imagefootprintpolygon,camX[currentid],camY[currentid],camZ[currentid]-meanZ,camRoll[currentid],camPitch[currentid],camYaw[currentid],camFocal,camPix[0]/2,camPix[1]/2);
+    }
+    else {
+        updateFootprintRxyz(imagefootprintpolygon,0,0,0,0,0,0,camFocal,camPix[0]/2,camPix[1]/2);
+    }
+
+    // add magenta dot if in camera
+    if (lookAtPtNum!=null){
+        var camerapos = xyzlookat = viewer.scene.measurements[lookAtPtNum].children[3].getWorldPosition();;
+        var cameraLatLon = projected2WGS84(camerapos.x,camerapos.y);
+
+        lookatmarker.setLatLng(cameraLatLon);
+        lookatmarker.update();
+    }
+    else {
+        lookatmarker.setLatLng([0,0]);
+        lookatmarker.update();    }
+}
+
+function calcCamerafcxcy(){
+    var camfov = viewer.getFOV()*Math.PI/180;
+    var cx = window.innerWidth/2;
+    var cy = window.innerHeight/2;
+    var f = cy/Math.tan(camfov/2);
+    return [f,cy,cx]
+}
+
+function updateFootprintRxyz(polygon,Xc,Yc,Zc,Rx,Ry,Rz,f,cx,cy){
+    Rx = Rx*Math.PI/180;
+    Ry = (Ry-180)*Math.PI/180;
+    Rz = -Rz*Math.PI/180;
+
+    P = calcP_RxRyRz(Xc,Yc,Zc,Rx,Ry,Rz,f,cx,cy);
+    footprintLL = calcFootprint(P,f,cx,cy);
+    polygon.setLatLngs(footprintLL);
+    polygon.redraw();
+}
+
+function updateFootprintPanTilt(polygon,Xc,Yc,Zc,pan,tilt,f,cx,cy){
+    P = calcP_pantilt(Xc,Yc,Zc,pan,tilt,f,cx,cy);
+    footprintLL = calcFootprint(P,f,cx,cy);
+    polygon.setLatLngs(footprintLL);
+    polygon.redraw();
+}
+
+function projected2WGS84(x,y){
+    let pointcloudProjection = "+proj=utm +zone=20 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
+    let mapProjection = proj4.defs("WGS84");
+
+    var lonlat = proj4(pointcloudProjection,mapProjection,[x,y]);
+
+    return [lonlat[1], lonlat[0]]
+}
+
+function projectedFromWGS84(lat,lng){
+    let pointcloudProjection = "+proj=utm +zone=20 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
+    let mapProjection = proj4.defs("WGS84");
+
+    var xy = proj4(mapProjection,pointcloudProjection,[lng,lat]);
+
+    return [xy[0], xy[1]]
+}
+
+function markerdragged(){
+    var LatLng = uasmarker.getLatLng();
+    var newxy = projectedFromWGS84(LatLng.lat,LatLng.lng);
+
+    viewer.scene.view.position.x = newxy[0];
+    viewer.scene.view.position.y = newxy[1];
+}
+
+// PHOTOGRAMMETRY
+function calcFootprint(P,f,cx,cy){
+    var footprintpixels = calcCornerPixHorizonTrim(P,f,cx,cy);
+    if (footprintpixels.length==0){
+        return([[0,0],[0,0],[0,0],[0,0]])
+    }
+    var i;
+    var LLcorners = Array();
+    for(i=0;i<footprintpixels.length;i++){
+        var Putm = uv2xyconstz(footprintpixels[i][0],footprintpixels[i][1],P);
+        LLcorners.push(projected2WGS84(Putm[0],Putm[1]));
+    }
+    return LLcorners
+}
+
+function calcP_pantilt(Xc,Yc,Zc,pan,tilt,f,cx,cy){
+    let P1 = [f*Math.cos(pan)*Math.cos(tilt) + cx*Math.cos(pan)*Math.sin(tilt),
+        f*Math.cos(tilt)*Math.sin(pan) + cx*Math.sin(pan)*Math.sin(tilt),
+        cx*Math.cos(tilt) - f*Math.sin(tilt),
+        - Xc*(f*Math.cos(pan)*Math.cos(tilt) + cx*Math.cos(pan)*Math.sin(tilt)) - Yc*(f*Math.cos(tilt)*Math.sin(pan) + cx*Math.sin(pan)*Math.sin(tilt)) - Zc*(cx*Math.cos(tilt) - f*Math.sin(tilt))];
+    let P2 = [cy*Math.cos(pan)*Math.sin(tilt) - f*Math.sin(pan),
+        f*Math.cos(pan) + cy*Math.sin(pan)*Math.sin(tilt),
+        cy*Math.cos(tilt),
+        Xc*(f*Math.sin(pan) - cy*Math.cos(pan)*Math.sin(tilt)) - Yc*(f*Math.cos(pan) + cy*Math.sin(pan)*Math.sin(tilt)) - Zc*cy*Math.cos(tilt)];
+    let P3 = [Math.cos(pan)*Math.sin(tilt),
+        Math.sin(pan)*Math.sin(tilt),
+        Math.cos(tilt),
+        - Zc*Math.cos(tilt) - Xc*Math.cos(pan)*Math.sin(tilt) - Yc*Math.sin(pan)*Math.sin(tilt)];
+    return [P1, P2, P3];
+}
+
+function calcP_RxRyRz(Xc,Yc,Zc,Rx,Ry,Rz,f,cx,cy){
+    let P1 = [cx*Math.sin(Ry) + f*Math.cos(Ry)*Math.cos(Rz),
+        f*(Math.cos(Rx)*Math.sin(Rz) + Math.cos(Rz)*Math.sin(Rx)*Math.sin(Ry)) - cx*Math.cos(Ry)*Math.sin(Rx),
+        f*(Math.sin(Rx)*Math.sin(Rz) - Math.cos(Rx)*Math.cos(Rz)*Math.sin(Ry)) + cx*Math.cos(Rx)*Math.cos(Ry),
+        - Xc*(cx*Math.sin(Ry) + f*Math.cos(Ry)*Math.cos(Rz)) - Zc*(f*(Math.sin(Rx)*Math.sin(Rz) - Math.cos(Rx)*Math.cos(Rz)*Math.sin(Ry)) + cx*Math.cos(Rx)*Math.cos(Ry)) - Yc*(f*(Math.cos(Rx)*Math.sin(Rz) + Math.cos(Rz)*Math.sin(Rx)*Math.sin(Ry)) - cx*Math.cos(Ry)*Math.sin(Rx))];
+    let P2 = [cy*Math.sin(Ry) - f*Math.cos(Ry)*Math.sin(Rz),
+        f*(Math.cos(Rx)*Math.cos(Rz) - Math.sin(Rx)*Math.sin(Ry)*Math.sin(Rz)) - cy*Math.cos(Ry)*Math.sin(Rx),
+        f*(Math.cos(Rz)*Math.sin(Rx) + Math.cos(Rx)*Math.sin(Ry)*Math.sin(Rz)) + cy*Math.cos(Rx)*Math.cos(Ry),
+        - Xc*(cy*Math.sin(Ry) - f*Math.cos(Ry)*Math.sin(Rz)) - Zc*(f*(Math.cos(Rz)*Math.sin(Rx) + Math.cos(Rx)*Math.sin(Ry)*Math.sin(Rz)) + cy*Math.cos(Rx)*Math.cos(Ry)) - Yc*(f*(Math.cos(Rx)*Math.cos(Rz) - Math.sin(Rx)*Math.sin(Ry)*Math.sin(Rz)) - cy*Math.cos(Ry)*Math.sin(Rx))];
+    let P3 = [Math.sin(Ry),
+        -Math.cos(Ry)*Math.sin(Rx),
+        Math.cos(Rx)*Math.cos(Ry),
+        Yc*Math.cos(Ry)*Math.sin(Rx) - Zc*Math.cos(Rx)*Math.cos(Ry) - Xc*Math.sin(Ry)];
+    return [P1, P2, P3];
+}
+
+function calcCornerPixHorizonTrim(P,f,cx,cy) {
+    // determine angle to not go over
+
+    let horizonangle = 85*Math.PI/180;
+    // [ 4       1 ]
+    // |           | Pixel corners in this order
+    // |           |
+    // [ 3       2 ]
+
+    var pix_of_corners = [[cx*2, 1],
+        [cx*2, cy*2],
+        [1, cy*2],
+        [1, 1]];
+
+    var el_of_corners = Array(4);
+
+    var i;
+    for(i=0;i<4;i++){
+        el_of_corners[i] = calcEl(P,pix_of_corners[i][0],pix_of_corners[i][1]);
+    }
+
+    var pixellist = Array();
+    for(i=0;i<4;i++){
+        var i1 = i;
+        var i2 = i+1;if (i2==4){i2=0;}
+        pixellist = calcSegmentInterp(pix_of_corners[i],pix_of_corners[i2],el_of_corners[i1],el_of_corners[i2],horizonangle,pixellist);
+    }
+
+    return pixellist;
+}
+
+function calcSegmentInterp(pix1, pix2, el1, el2, horizonangle, pixellist){
+    // Null Case: both points are above the horizon angle
+    if (el1>=horizonangle && el2>=horizonangle){return pixellist;}
+
+    // If first below horizon, push that point to pixellist
+    if (el1<horizonangle){
+        pixellist.push(pix1);
+        if (el2<horizonangle) {return pixellist;}
+    }
+
+    // Interpolate along segment
+    // find whether xpix or ypix are varying
+    var xvarying = false;
+    if (pix1[1]==pix2[1]){xvarying=true;}
+    // interpolate
+    var T = (horizonangle-el1)/(el2-el1);
+    if (xvarying){
+        var ypix = pix1[1];
+        var xpix = pix1[0] + (pix2[0] - pix1[0]) * T;
+        pixellist.push([xpix, ypix])
+    }
+    else {
+        var xpix = pix1[0];
+        var ypix = pix1[1] + (pix2[1] - pix1[1]) * T;
+        pixellist.push([xpix, ypix])
+    }
+    return pixellist;
+}
+
+function calcEl(P,pixx,pixy){
+    var fullP = P.slice(0);
+    var iP = math.inv([[fullP[0][0], fullP[0][1], fullP[0][2]],
+        [fullP[1][0], fullP[1][1], fullP[1][2]],
+        [fullP[2][0], fullP[2][1], fullP[2][2]]]);
+    var uvs1 = [pixx,pixy,1];
+    var xyz1 = math.multiply(iP,uvs1);
+
+    var r = Math.sqrt((xyz1[0])**2+(xyz1[1])**2);
+    var el = Math.PI/2 + Math.atan2(xyz1[2],r);
+
+    return el;
 }
 
 function isptincamera(f,cx,cy,Xc,Yc,Zc,Xw,Yw,Zw,Rx,Ry,Rz) {
@@ -480,17 +691,11 @@ function isptincamera(f,cx,cy,Xc,Yc,Zc,Xw,Yw,Zw,Rx,Ry,Rz) {
     return isgood
 }
 
-function uv2xyFixedZ(f,cx,cy,Xc,Yc,Zc,Rx,Ry,Rz){
+function uv2xyconstz(pixx,pixy,P){
+    //assumes Zw = 0;
+    var Xw = (P[0][1]*P[1][3] - P[0][3]*P[1][1] - P[0][1]*P[2][3]*pixy + P[0][3]*P[2][1]*pixy + P[1][1]*P[2][3]*pixx - P[1][3]*P[2][1]*pixx)/(P[0][0]*P[1][1] - P[0][1]*P[1][0] - P[0][0]*P[2][1]*pixy + P[0][1]*P[2][0]*pixy + P[1][0]*P[2][1]*pixx - P[1][1]*P[2][0]*pixx);
+    var Yw = -(P[0][0]*P[1][3] - P[0][3]*P[1][0] - P[0][0]*P[2][3]*pixy + P[0][3]*P[2][0]*pixy + P[1][0]*P[2][3]*pixx - P[1][3]*P[2][0]*pixx)/(P[0][0]*P[1][1] - P[0][1]*P[1][0] - P[0][0]*P[2][1]*pixy + P[0][1]*P[2][0]*pixy + P[1][0]*P[2][1]*pixx - P[1][1]*P[2][0]*pixx);
+    var s = (P[0][0]*P[1][1]*P[2][3] - P[0][0]*P[1][3]*P[2][1] - P[0][1]*P[1][0]*P[2][3] + P[0][1]*P[1][3]*P[2][0] + P[0][3]*P[1][0]*P[2][1] - P[0][3]*P[1][1]*P[2][0])/(P[0][0]*P[1][1] - P[0][1]*P[1][0] - P[0][0]*P[2][1]*pixy + P[0][1]*P[2][0]*pixy + P[1][0]*P[2][1]*pixx - P[1][1]*P[2][0]*pixx);
 
-
-    return xyz;
-}
-
-function projected2WGS84(x,y){
-    let pointcloudProjection = e.pointcloud.projection;
-    let mapProjection = proj4.defs("WGS84");
-
-    latlon = proj4(firstProjection,secondProjection,[2,5]);
-
-    return latlon
+    return [Xw, Yw, s];
 }

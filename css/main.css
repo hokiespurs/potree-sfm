@@ -57,4 +57,44 @@
 
 .btn{
     height: 50px;
+    border-width: 2px;
+    background-repeat: repeat-x;
+    background-size: 0 40px;
+}
+
+.cammarker {
+    color: orangered;
+    text-align: center; /* Horizontally center the text (icon) */
+    line-height: 10px; /* Vertically center the text (icon) */
+    font-size: 10px;
+}
+
+.camlookatmarker {
+    color: magenta;
+    text-align: center; /* Horizontally center the text (icon) */
+    line-height: 10px; /* Vertically center the text (icon) */
+    font-size: 10px;
+}
+
+#btnColormap1 {
+    background: url('../assets/cmapimages/Colormap_01.png');
+}
+#btnColormap2 {
+    background: url('../assets/cmapimages/Colormap_02.png');
+}
+#btnColormap3 {
+    background: url('../assets/cmapimages/Colormap_03.png');
+}
+#btnColormap4 {
+    background: url('../assets/cmapimages/Colormap_04.png');
+}
+#btnColormap5 {
+    background: url('../assets/cmapimages/Colormap_05.png');
+}
+#btnColormap6 {
+    background: url('../assets/cmapimages/Colormap_06.png');
+}
+#btnColormap7 {
+    background: url('../assets/cmapimages/Colormap_07.png');
+
 }

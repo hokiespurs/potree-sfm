@@ -1,10 +1,40 @@
 # potree-sfm
-This project demonstrates a method for visualizing SfM derived pointcloud and image data in a web browser. Small details which were not resolved by the SfM pointcloud, can still be visualized using the images.
+This project demonstrates a method for visualizing SfM derived pointcloud and image data in a web browser. Small details, which were not resolved by the SfM pointcloud, can still be visualized using the images.
 
-[demo](http://research.engr.oregonstate.edu/lidar/pointcloud/divicarina/)
+[view demo](http://research.engr.oregonstate.edu/lidar/pointcloud/divicarina/)
 
-# Proposal
+![demo](img/demo_shorter.png)
+## Features
+- Toggle with map button
+- Resizeable gif
+- Orange Dot and Footprint, Cyan Footprint
+- Move dot to move camera horizontally
 
+- Toggle Cameras
+- Click on Camera or use arrow to fly to camera FOV
+- Left Click Look Around, Right click moves camera and exits view
+
+- Measure Tools
+- Look At Tool
+  - filter
+  - view look at point
+- Clear Measurement
+
+- Appearance Buttons + Sliders
+
+- Download Button
+
+## Dependencies
+
+## Attribution
+
+
+
+<hr>
+
+# OLD BELOW HERE
+
+<hr>
 ## Group members
 
 - Richie Slocum w/ help from Bo Zhao

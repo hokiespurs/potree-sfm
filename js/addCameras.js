@@ -12,6 +12,8 @@ let measuringTool = new Potree.MeasuringTool(viewer);
 var mapshow = true;
 var lookAtPtNum = null;
 var dofilterimages = false;
+var lastLookAtPt = [0,0,0];
+
 // when the mouse moves, call the given function
 document.addEventListener('mousemove', onDocumentMouseMove, false);
 document.addEventListener('mousedown', onDocumentMouseClick, false);
@@ -31,7 +33,7 @@ viewer.scene.scene.add(imageplane);
 imageplane.visible = false;
 
 //checks if user moved the screen, and therefore imageplane should be turned off
-setInterval(checkMovement, 500);
+setInterval(checkMovement, 100);
 setInterval(cameraOnMap, 100);
 
 
@@ -270,6 +272,15 @@ function checkMovement(){
             }
         }
     }
+    if (lookAtPtNum!=null && dofilterimages){
+        var currentlookatpt =  viewer.scene.measurements[lookAtPtNum].children[3].getWorldPosition();
+
+        if(currentlookatpt.x!=lastLookAtPt.x || currentlookatpt.y!=lastLookAtPt.y || currentlookatpt.z!=lastLookAtPt.z) {
+            filterImages();
+            console.log("filtering images");
+            lastLookAtPt = currentlookatpt;
+        }
+    }
 
 }
 
@@ -493,7 +504,7 @@ function cameraOnMap(){
 
     // add magenta dot if in camera
     if (lookAtPtNum!=null){
-        var camerapos = xyzlookat = viewer.scene.measurements[lookAtPtNum].children[3].getWorldPosition();;
+        var camerapos = viewer.scene.measurements[lookAtPtNum].children[3].getWorldPosition();
         var cameraLatLon = projected2WGS84(camerapos.x,camerapos.y);
 
         lookatmarker.setLatLng(cameraLatLon);

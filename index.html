@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Potree and three.js based SfM data visualization">
+    <meta name="author" content="Richie Slocum">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Potree Viewer</title>
-
+    <title>Divi Carina Bay</title>
+    <link rel="icon" href="img/logo.png">
     <link rel="stylesheet" type="text/css" href="libs/potree/potree.css">
     <link rel="stylesheet" type="text/css" href="libs/jquery-ui/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="libs/perfect-scrollbar/css/perfect-scrollbar.css">
@@ -53,7 +53,7 @@
     </a>
 
     <div class="d-flex justify-content-left nav-item">
-        <span class="navbar-text"><h2>&nbsp Divi Carina Resort, USVI</h2></span>
+        <span class="navbar-text"><h2> Divi Carina Resort, USVI</h2></span>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -107,6 +107,7 @@
                     <span class="fa-stack fa-lg">
                         <i class="fa fa-square fa-stack-2x buttonbg"></i>
                         <i class="fa fa-wrench fa-stack-1x buttonfg"></i>
+                        <i class="fa fa-sort-down fa-stack-1x buttonfg downchevron"></i>
                     </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
@@ -133,6 +134,7 @@
                     <span class="fa-stack fa-lg">
                         <i class="fa fa-square fa-stack-2x buttonbg"></i>
                         <i class="fa fa-paint-brush fa-stack-1x buttonfg"></i>
+                        <i class="fa fa-sort-down fa-stack-1x buttonfg downchevron"></i>
                     </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right" >
@@ -214,13 +216,13 @@
                         <a class="dropdown-item navbar-text" href="#">
                             Colormap: <br>
                             <div class="btn-group btn-group-justified" role="group" aria-label="Second group">
-                                <button id="btnColormap1" type="button" class="btn btn-secondary" ></button>
-                                <button id="btnColormap2" type="button" class="btn btn-secondary" ></button>
-                                <button id="btnColormap3" type="button" class="btn btn-secondary" ></button>
-                                <button id="btnColormap4" type="button" class="btn btn-secondary" ></button>
-                                <button id="btnColormap5" type="button" class="btn btn-secondary" ></button>
-                                <button id="btnColormap6" type="button" class="btn btn-secondary" ></button>
-                                <button id="btnColormap7" type="button" class="btn btn-secondary" ></button>
+                                <button id="btnColormap1" type="button" class="btn btn-secondary" >&nbsp</button>
+                                <button id="btnColormap2" type="button" class="btn btn-secondary" >&nbsp</button>
+                                <button id="btnColormap3" type="button" class="btn btn-secondary" >&nbsp</button>
+                                <button id="btnColormap4" type="button" class="btn btn-secondary" >&nbsp</button>
+                                <button id="btnColormap5" type="button" class="btn btn-secondary" >&nbsp</button>
+                                <button id="btnColormap6" type="button" class="btn btn-secondary" >&nbsp</button>
+                                <button id="btnColormap7" type="button" class="btn btn-secondary" >&nbsp</button>
                             </div>
                         </a>
                     </li>
@@ -238,14 +240,49 @@
                 </ul>
             </li>
 
+            <!-- Download-->
+
+            <li class="nav-item dropdown keep-open">
+                <a class="nav-link " href="#" role="button" data-toggle="dropdown" >
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-square fa-stack-2x buttonbg"></i>
+                        <i class="fa fa-download fa-stack-1x buttonfg"></i>
+                        <i class="fa fa-sort-down fa-stack-1x buttonfg downchevron"></i>
+                    </span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right" >
+                    <li id="downloadheader"><a class="dropdown-item navbar-text" href="#"> <strong>
+                        <span class="fa-stack fa-lg">
+                        <i class="fa fa-square fa-stack-2x buttonbg"></i>
+                        <i class="fa fa-download fa-stack-1x buttonfg"></i>
+                        </span>
+                        Download Data</strong> </a></li>
+                    <li><div class="dropdown-divider"></div></li>
+                    <li><a class="dropdown-item navbar-text" href="assets/04_POINTCLOUD/foo.txt" download="foo_las.txt">
+                        <i class="fa fa-cloud fa-fw fa-lg "></i>
+                        Pointcloud</a>
+                    </li>
+
+                    <li><a class="dropdown-item navbar-text" href="assets/04_POINTCLOUD/foo.txt" download="foo_ortho.txt">
+                        <i class="fa fa-image fa-fw fa-lg "></i>
+                        Orthophoto</a>
+                    </li>
+
+                    <li><a class="dropdown-item navbar-text" href="assets/04_POINTCLOUD/foo.txt" download="foo_meta.txt">
+                        <i class="fa fa-file fa-fw fa-lg "></i>
+                        Metadata</a>
+                    </li>
+                </ul>
+            </li>
+
             <!-- Info-->
             <li class="nav-item">
-            <a class="nav-link" href="#">
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#exampleModalCenter">
                     <span class="fa-stack fa-lg">
                         <i class="fa fa-square fa-stack-2x buttonbg"></i>
                         <i class="fa fa-info fa-stack-1x buttonfg"></i>
                     </span>
-            </a>
+                </a>
             </li>
 
         </ul>
@@ -262,9 +299,51 @@
     <div id="potree_render_area">
     </div>
 
-    <div id="attribution" ><p class="attr">&nbsp Richie Slocum (2018)&nbsp</p></div>
+    <div id="attribution" ><a class="attr" href="https://hokiespurs.github.io/">&nbsp<i class="fa fa-github fa-lg"></i> Richie Slocum (2018)&nbsp</a></div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal-header-info">
+                <h5 class="modal-title" id="exampleModalLongTitle">Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5>Project</h5>
+                <p>
+                    This project demonstrates a method for visualizing SfM derived pointcloud and image data in a web browser.
+                    Small details which were not resolved by the SfM pointcloud, can still be visualized using the images.
+                    More info and feature descriptions are available on <a class="hyp" href="https://github.com/hokiespurs/potree-sfm">github</a>.
+                </p>
+                <hr>
+                <h5>Attribution</h5>
+                <p>
+                    This work is built off of <a class="hyp" href="http://potree.org/">potree</a>, a great pointcloud visualization javascript library developed by Marcus Schütz and many others.
+                </p>
+                <hr>
+                <h5>Author</h5>
+                <div style="display:flex">
+                    <div style="width:150px">
+                        <img width="100%" src="img/profkayak_circle.jpg">
+                    </div>
+                    <div style="flex: 1;padding-left: 30px;">
+                        <h6>Richie Slocum</h6>
+                        <hr>
+                        <p> PhD Student, Oregon State University</p>
+                        <p> Civil Engineering: Geomatics</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script src="js/loadpointcloud.js"></script>
@@ -535,6 +614,14 @@
             $(this).parent().attr('closable', true );
         }
     });
+
+    $('#downloadheader').on({
+        "click": function() {
+            $('.keep-open').attr('closable', true );
+            $(this).parent().attr('closable', true );
+        }
+    });
+
 
     $('.keep-open .nav-link').on({
         "click": function() {

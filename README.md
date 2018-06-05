@@ -1,4 +1,4 @@
-# images-in-a-potree
+# potree-sfm
 Project with the primary goal of adding SfM images into a potree viewer using THREE.js.
 
 # Proposal

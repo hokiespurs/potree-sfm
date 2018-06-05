@@ -1,5 +1,7 @@
 # potree-sfm
-Project with the primary goal of adding SfM images into a potree viewer using THREE.js.
+This project demonstrates a method for visualizing SfM derived pointcloud and image data in a web browser. Small details which were not resolved by the SfM pointcloud, can still be visualized using the images.
+
+[demo](http://research.engr.oregonstate.edu/lidar/pointcloud/divicarina/)
 
 # Proposal
 

@@ -1,5 +1,7 @@
 # potree-sfm
-Project with the primary goal of adding SfM images into a potree viewer using THREE.js.
+This project demonstrates a method for visualizing SfM derived pointcloud and image data in a web browser. Small details which were not resolved by the SfM pointcloud, can still be visualized using the images.
+
+[demo](http://research.engr.oregonstate.edu/lidar/pointcloud/divicarina/)
 
 # Proposal
 
@@ -40,16 +42,18 @@ The interface will be similar to the image from Pix4D shown in the project descr
 ## Proposed Timeline
 | Task                                                         |      Date      | Date Completed |
 | :----------------------------------------------------------- | :------------: | :------------: | 
-| item1</li> Add Image texture to plane using THREE.js                    |   04/30/2018   | 04/30/2018
-| Add one Image plane-pyramid into a Potree scene w/ rotation matrix applied |   05/14/2018   | 05/13/2018
-| Add Cesium Map                                               |   05/21/2018   |             |
+| item1</li> Add Image texture to plane using THREE.js                    |   04/30/2018   | 04/30/2018 |
+| Add one Image plane-pyramid into a Potree scene w/ rotation matrix applied |   05/14/2018   | 05/13/2018 |
+| Add Cesium Map                                               |   05/21/2018   | N/A  |
 | Custom Layout Design                                         |   05/21/2018   | 05/10/2018  |
 | Custom Layout Implementation                                 |   05/28/2018   | 05/30/2018  |
-| Finish Demo                                                  |   06/01/2018   |             |
+| Finish Demo                                                  |   06/01/2018   | 06/04/2018  |
 | Finish Documentation                                         |   06/08/2018   |             |
-| option 1: Add tool to draw rays from clicked points          | if time allows |             |
-| option 2: Make nice js library to make adding these to Potree really easy | if time allows |             |
-| option 3: Snap view to images with correct FOV               | if time allows |             |
+| option 1: Add tool to draw rays from clicked points          | if time allows | - |
+| option 2: Make nice js library to make adding these to Potree really easy | if time allows | - |
+| option 3: Snap view to images with correct FOV               | if time allows | 06/04/2018 |
+
+* Note that the Cesium Map was integrated, but I felt it cluttered the visual and took away from the content.  Therefore, it is not included in the final project.
 
 ## Interface Sketch
 Below is a rough idea for the desired interface.  I hope to use a bootstrap navigation bar up top, with icons to indicate the possible dropdowns.  The main potree viewer will be enhanced with the optional addition of a Cesium map, and "image pyradmids" in the scene.  These image pyramids will allow the user to see how the pointcloud was generated.  An attribution will also be placed in the lower right, similar to how leaflet does.

@@ -365,9 +365,6 @@
     $('#lookAtFilter').hide();
     $('#toggleLookAtPtVisible').hide();
 
-    toggleEDL();
-    toggleHQ();
-
     $('#toggleimage').on('click', function (e) {
         if(camsvisible){
             if (cameraplaneview) {
@@ -640,9 +637,9 @@
         }
     });
 
-    var zlimits = viewer.scene.pointclouds[0].material.elevationRange;
-    $( "#minval" ).val( Math.floor(zlimits[0]*10)/10);
-    $( "#maxval" ).val( Math.ceil(zlimits[1]*10)/10);
+    var zlimits = [-0.8, 19.1];
+    $( "#minval" ).val( 0 );
+    $( "#maxval" ).val( 15 );
 
     $( function() {
         $( "#slider-range" ).slider({
@@ -694,7 +691,7 @@
                 range: false,
                 min: 1000000,
                 max: 10000000,
-                value: 5000000,
+                value: 1000000,
                 step: 500000,
             slide: function( event, ui ) {
                 $( "#sliderPointBudgetValue" )

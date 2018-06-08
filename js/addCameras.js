@@ -13,10 +13,11 @@ var mapshow = true;
 var lookAtPtNum = null;
 var dofilterimages = false;
 var lastLookAtPt = [0,0,0];
-
+var SCALEIMG = 3;
 // when the mouse moves, call the given function
 document.addEventListener('mousemove', onDocumentMouseMove, false);
 document.addEventListener('mousedown', onDocumentMouseClick, false);
+document.addEventListener('keydown', onDocumentKeyPress, false);
 
 // ADD PYRAMIDS TO SCENE
 
@@ -259,7 +260,7 @@ function checkMovement(){
     //only check if imageplane is visible
     if (cameraplaneview){
         var currentXYZ = getCurrentPos();
-        if(currentXYZ[0]!=lastXYZ[0] || currentXYZ[0]!=lastXYZ[0] || currentXYZ[0]!=lastXYZ[0]){
+        if(currentXYZ[0]!=lastXYZ[0] || currentXYZ[1]!=lastXYZ[1] || currentXYZ[2]!=lastXYZ[2]){
             imageplane.visible=false;
             changetoflymode();
             if (camsvisible | cameraplaneview){
@@ -272,7 +273,7 @@ function checkMovement(){
             }
         }
     }
-    if (lookAtPtNum!=null && dofilterimages){
+    if (lookAtPtNum!=null && dofilterimages && !cameraplaneview){
         var currentlookatpt =  viewer.scene.measurements[lookAtPtNum].children[3].getWorldPosition();
 
         if(currentlookatpt.x!=lastLookAtPt.x || currentlookatpt.y!=lastLookAtPt.y || currentlookatpt.z!=lastLookAtPt.z) {
@@ -314,7 +315,7 @@ function onDocumentMouseMove(event) {
 }
 
 function onDocumentMouseClick(event) {
-    if (mouse.doUse) {
+    if (mouse.doUse && event.button==0) {
         raycaster.setFromCamera(mouse, viewer.scene.cameraP);
 
         // calculate objects intersecting the picking ray
@@ -328,6 +329,18 @@ function onDocumentMouseClick(event) {
     }
 }
 
+function onDocumentKeyPress(event){
+    var keycode = event.code;
+    switch (keycode){
+        case "Space":
+            flyTo(XYZPTend,100,5000);
+            break;
+        case "Digit1":
+            XYZPTend = getCameraXYZPT();
+            break;
+    }
+    console.log(event);
+}
 function checkIntersections() {
     if (mouse.doUse) {
         raycaster.setFromCamera(mouse, viewer.scene.cameraP);
@@ -422,22 +435,34 @@ function measClear(){
 function measLookAt(){
     if(lookAtPtNum!=null){
         viewer.scene.measurements[lookAtPtNum].visible= false;
+        lookAtPtNum = null;
+        var lastLookAtPt = [0,0,0];
+        $('#lookAtFilter').hide();
+        $('#toggleLookAtPtVisible').hide();
+        $('#lookatbtn').removeClass('buttonfgclicked');
+        $('#filterbtn').addClass('buttonfgclicked');
     }
-    lookAtPtNum = viewer.scene.measurements.length;
-    let measurement = measuringTool.startInsertion({
-        showDistances: false,
-        showAngles: false,
-        showCoordinates: false,
-        showArea: false,
-        closed: true,
-        maxMarkers: 1,
-        name: 'Point'});
+    else {
+        lookAtPtNum = viewer.scene.measurements.length;
+        let measurement = measuringTool.startInsertion({
+            showDistances: false,
+            showAngles: false,
+            showCoordinates: false,
+            showArea: false,
+            closed: true,
+            maxMarkers: 1,
+            name: 'Point'
+        });
 
-    viewer.scene.measurements[lookAtPtNum].children[3].material.color.setRGB(255,0,255);
-    $('#lookAtFilter').show();
-    $('#toggleLookAtPtVisible').show();
-    $('#lookatvisible').addClass('buttonfgclicked');
-    $('#lookatbtn').addClass('buttonfgclicked');
+        viewer.scene.measurements[lookAtPtNum].children[3].material.color.setRGB(255, 0, 255);
+        $('#lookAtFilter').show();
+        $('#toggleLookAtPtVisible').show();
+        $('#lookatvisible').addClass('buttonfgclicked');
+        $('#lookatbtn').addClass('buttonfgclicked');
+        $('#cameraicon').addClass('buttonfgclicked');
+        $('#filterbtn').addClass('buttonfgclicked');
+        dofilterimages = true;
+    }
 }
 
 function filterImages(){
@@ -483,9 +508,7 @@ function cameraOnMap(){
     uasmarker.setLatLng(cameraLatLon);
     uasmarker.update();
     // Get Mean Z of PC to compute plane for footprint
-    let elevationrange = viewer.scene.pointclouds[0].material.elevationRange;
-    var meanZ =  (elevationrange[0] + elevationrange[1])/2;
-    meanZ = elevationrange[0];
+    var meanZ = 0; // HARDCODED
 
     // Add camera Footprint to Map
     var xyzCamera = getCurrentPos();

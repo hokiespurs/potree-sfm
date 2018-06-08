@@ -50,12 +50,6 @@
 <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/4.1.2/math.min.js"></script>
 
-<script>
-    let pageTitle='Solar Panels';
-    let dataAttribution='Data acquired by Jared Ritchie, Processing and Visualization by Richie Slocum';
-    let SCALEIMG = 3;
-</script>
-
 <!-- Bootstrap Layout -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light py-0" style="z-index:100;">
     <a class="navbar-brand" href="#">
@@ -172,7 +166,7 @@
                         <a class="dropdown-item navbar-text" href="#">
                             <div class="input-group">
                                 <span class="input-group-addon navbar-text" style="width:140px">Number Of Points:</span>
-                                <input id="sliderPointBudgetValue" type="text" class="form-control" placeholder="5M">
+                                <input id="sliderPointBudgetValue" type="text" class="form-control" placeholder="1M">
                             </div>
                             <div id="sliderPointBudget"></div>
                         </a>
@@ -287,14 +281,22 @@
 
             <!-- Info-->
             <li class="nav-item">
-                <a class="nav-link" href="#" data-toggle="modal" data-target="#exampleModalCenter">
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#infomodal">
                     <span class="fa-stack fa-lg">
                         <i class="fa fa-square fa-stack-2x buttonbg"></i>
                         <i class="fa fa-info fa-stack-1x buttonfg"></i>
                     </span>
                 </a>
             </li>
-
+            <!-- Help-->
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#helpmodal" onclick="$('#carouselExampleIndicators').carousel(0);">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-square fa-stack-2x buttonbg"></i>
+                        <i class="fa fa-question fa-stack-1x buttonfg"></i>
+                    </span>
+                </a>
+            </li>
         </ul>
     </div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -312,12 +314,12 @@
     <div id="attribution" ><a class="attr" href="https://hokiespurs.github.io/">&nbsp<i class="fa fa-github fa-lg"></i> Richie Slocum (2018)&nbsp</a></div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<!-- Info Modal -->
+<div class="modal fade" id="infomodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header modal-header-info">
-                <h5 class="modal-title" id="exampleModalLongTitle">Information</h5>
+            <div class="modal-header modal-header-success">
+                <h5 class="modal-title">Information</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -326,8 +328,9 @@
                 <h5>Project</h5>
                 <p>
                     This project demonstrates a method for visualizing SfM derived pointcloud and image data in a web browser.
-                    Small details which were not resolved by the SfM pointcloud, can still be visualized using the images.
-                    More info and feature descriptions are available on <a class="hyp" href="https://github.com/hokiespurs/potree-sfm">github</a>.
+                    Small details, which were not resolved by the SfM pointcloud, can still be visualized using the images.
+                    <br>
+                    <i class="fa fa-github hyp"></i> <a class="hyp" href="https://github.com/hokiespurs/potree-sfm">More information</a>.
                 </p>
                 <hr>
                 <h5>Attribution</h5>
@@ -343,13 +346,133 @@
                     <div style="flex: 1;padding-left: 30px;">
                         <h6>Richie Slocum</h6>
                         <hr>
-                        <p> PhD Student, Oregon State University</p>
-                        <p> Civil Engineering: Geomatics</p>
+                        <p> PhD Student, Oregon State University
+                            <br>
+                            Civil Engineering - Geomatics
+                            <br>
+                            <a class="hyp" href="mailto:hokiespurs@gmail.com">hokiespurs@gmail.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div class="modal fade" id="helpmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal-header-info">
+                <h5 class="modal-title">Help - <a id="helpsubtitle"> Layout </a></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="helpmodalbody">
+                <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="false">
+                        <div class="carousel-inner" data-interval="false">
+                            <!-- LAYOUT-->
+                            <div class="carousel-item active" id="carousel_1">
+                                <img class="d-block w-100" src="doc/howto/01_LAYOUT.png" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px">The main sections of the project are the interactive map in the upper left, the toolbar across the top, and the main 3D scene. The main scene has both the pointcloud and image pyramids. </p>
+                            </div>
+
+                            <!-- IMAGE PYRAMIDS-->
+                            <div class="carousel-item " id="carousel_2">
+                                <img class="d-block w-100" src="doc/howto/02_IMAGEPYRAMIDS.gif" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px">"Image Pyramids" are placed in the scene to represent where an image was taken from. The image plane is placed at a position and orientation computed through SfM processing, such that it aligns with the pointcloud when viewed from the right position.</p>
+                            </div>
+
+                            <!-- SIMPLIFY LAYOUT-->
+                            <div class="carousel-item " id="carousel_3">
+                                <img class="d-block w-100" src="doc/howto/03_SIMPLIFY.gif" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px">The view can be simplified to turn off the map and images using the toggle buttons on the toolbar.</p>
+                            </div>
+
+                            <!-- NAVIGATION-->
+                            <div class="carousel-item " id="carousel_4">
+                                <img class="d-block w-100" src="doc/howto/04_NAV.gif" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px">Use the left mouse button to orbit around a point.  Use the scroll wheel to zoom.  Use the right mouse button to translate the view.  Double click a point to fly to it.</p>
+                            </div>
+
+                            <!-- NAVIGATION TO LOOK THROUGH-->
+                            <div class="carousel-item " id="carousel_5">
+                                <img class="d-block w-100" src="doc/howto/05_LOOKTHROUGH.gif" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px">"Look Through" mode is a view where the viewpoint is placed at the exact position an image was taken from.  The image plane is placed at a position and orientation such that it aligns with the pointcloud.
+                                    This can be seen as holding a picture frame in front of a person.  The two ways to enter this mode are: 1) Click a desired image pyramid.  2) Click the Forward / Backward arrow on the toolbar.
+                                    This will move the current view to align with either the selected image plane, or the previous/next image.</p>
+                            </div>
+
+                            <!-- NAVIGATION IN LOOK THROUGH MODE-->
+                            <div class="carousel-item " id="carousel_6">
+                                <img class="d-block w-100" src="doc/howto/06_NAVTHROUGH.gif" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px">Use the left mouse button to pan/tilt the camera.
+                                Use the scroll wheel to zoom in and out (this is actually changing the field of view).
+                                Use the left mouse button to translate the camera position, which will exit the "look-through" view.</p>
+                            </div>
+
+                            <!-- MAP LAYOUT-->
+                            <div class="carousel-item " id="carousel_7">
+                                <img class="d-block w-100" src="doc/howto/07_MAP.gif" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px">The interactive map box (which can be resized by dragging the lower right corner), contains a high resolution orthophoto of the scene overlaid on top of a simple basemap.
+                                    The orange polygon represents the approximate footprint of the current view, while the cyan polygon represents the footprint of the current "look-through" image.
+                                    There is a small, draggable dot which reprents the horizontal position of the current view.
+                                </p>
+                            </div>
+
+                            <!-- MEASURE BUTTONS-->
+                            <div class="carousel-item " id="carousel_8">
+                                <img class="d-block w-100" src="doc/howto/08_MEASUREMENTS.png" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px">The measurements toolbar enables 4 basic measurements on the pointcloud (Point, Distance, Height, and Angle.)  These measurements are displayed on the screen until the "Remove All" button is clicked.</p>
+                            </div>
+
+                            <!-- LOOK AT FUNCTIONALITY-->
+                            <div class="carousel-item " id="carousel_11">
+                                <img class="d-block w-100" src="doc/howto/11_LOOKAT.gif" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px"> The "Look at" button can be used to filter the image planes by images that can see that point.
+                                    Using the filter button enables and disables filtering by images.
+                                    Using the "Visible Point" button turns the magenta dot off, but maintains the functionality.
+                                    As you step through different "look through" views using the arrow keys, the camera will stay locked onto this point, and skip images which don't see the point.</p>
+                            </div>
+
+                            <!-- APPEARANCE TOOLS-->
+                            <div class="carousel-item " id="carousel_9">
+                                <img class="d-block w-100" src="doc/howto/09_APPEARANCE.gif" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px">There are various appearance sliders and buttons which you can use to change the quality and color of the pointcloud. </p>
+                            </div>
+
+                            <!-- LOOK AT FUNCTIONALITY-->
+                            <div class="carousel-item " id="carousel_12">
+                                <img class="d-block w-100" src="doc/howto/12_OPACITY.gif" width = "100%" alt="First slide">
+                                <hr>
+                                <p style="height:100px"> When in "look through" mode, the opacity of the image can be changed with the appearance slider.</p>
+                            </div>
+
+                            <!-- DOWNLOAD BUTTONS-->
+                            <div class="carousel-item " id="carousel_10">
+                                <img class="d-block w-100" src="doc/howto/downloads.png" alt="First slide">
+                                <hr>
+                                <p style="height:100px">The downloads dropdown can be used to download the pointcloud, orthophoto, and metadata. *Note: Rather that taxing the OSU research server with Gb of file transfers, small text files are used to demonstrate the functionality.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" onclick="stepCarousel('prev')">Previous</button>
+                <button type="button" class="btn btn-primary" onclick="stepCarousel('next')">Next</button>
             </div>
         </div>
     </div>
@@ -364,6 +487,56 @@
     var cmap=Potree.Gradients["RAINBOW"];
     $('#lookAtFilter').hide();
     $('#toggleLookAtPtVisible').hide();
+
+    function stepCarousel(stepdir){
+        $('#carouselExampleIndicators').carousel(stepdir);
+    }
+
+    $('#carouselExampleIndicators').on('slide.bs.carousel', function (ev) {
+        var id = ev.relatedTarget.id;
+        var str='';
+        switch (id) {
+            case "carousel_1":
+                str = 'Layout';
+                break;
+            case "carousel_2":
+                str = 'Image Pyramids';
+                break;
+            case "carousel_3":
+                str = 'Simplifying the Layout';
+                break;
+            case "carousel_4":
+                str = 'Navigation';
+                break;
+            case "carousel_5":
+                str = 'Navigating to "Look-through" view';
+                break;
+            case "carousel_6":
+                str = 'Navigating in "Look-through" view';
+                break;
+            case "carousel_7":
+                str = 'Map Layout';
+                break;
+            case "carousel_8":
+                str = 'Measuring Tools';
+                break;
+            case "carousel_9":
+                str = 'Changing the Appearance';
+                break;
+            case "carousel_10":
+                str = 'Downloading Data';
+                break;
+            case "carousel_11":
+                str = '"Look At" Tool';
+                break;
+            case "carousel_12":
+                str = '"Look At" Image Opacity';
+                break;
+            default:
+            //the id is none of the above
+        }
+        $('#helpsubtitle').text(str);
+    })
 
     $('#toggleimage').on('click', function (e) {
         if(camsvisible){
@@ -756,7 +929,6 @@
 
         }
     }
-
 
 </script>
 

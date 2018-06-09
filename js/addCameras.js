@@ -316,15 +316,9 @@ function onDocumentMouseMove(event) {
 
 function onDocumentMouseClick(event) {
     if (mouse.doUse && event.button==0) {
-        raycaster.setFromCamera(mouse, viewer.scene.cameraP);
-
-        // calculate objects intersecting the picking ray
-        var intersects = raycaster.intersectObjects(viewer.scene.scene.children, true);
-        for (var i = 0; i < intersects.length; i++) {
-            if (intersects[i].object.geometry.vertices.length == 5) {
-                flytoimagenum = intersects[i].object.parent.myimagenum;
-                flyToCam(flytoimagenum);
-            }
+        if (INTERSECTED!=null) {
+            flytoimagenum = INTERSECTED.parent.myimagenum;
+            flyToCam(flytoimagenum);
         }
     }
 }
@@ -441,6 +435,12 @@ function measLookAt(){
         $('#toggleLookAtPtVisible').hide();
         $('#lookatbtn').removeClass('buttonfgclicked');
         $('#filterbtn').addClass('buttonfgclicked');
+        if (dofilterimages){
+            dofilterimages = false;
+            if(camsvisible){
+                turnImagesOn();
+            }
+        }
     }
     else {
         lookAtPtNum = viewer.scene.measurements.length;

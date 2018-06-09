@@ -319,7 +319,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header modal-header-success">
-                <h5 class="modal-title">Information</h5>
+                <h4 class="modal-title">Information</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -364,7 +364,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header modal-header-info">
-                <h5 class="modal-title">Help - <a id="helpsubtitle"> Layout </a></h5>
+                <h4 class="modal-title">Help <a id="helpsubtitle">(1/12) - Layout</a></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -462,7 +462,7 @@
 
                             <!-- DOWNLOAD BUTTONS-->
                             <div class="carousel-item " id="carousel_10">
-                                <img class="d-block w-100" src="doc/howto/downloads.png" alt="First slide">
+                                <img class="d-block w-100" src="doc/howto/13_DOWNLOADS.png" alt="First slide">
                                 <hr>
                                 <p style="height:100px">The downloads dropdown can be used to download the pointcloud, orthophoto, and metadata. *Note: Rather that taxing the OSU research server with Gb of file transfers, small text files are used to demonstrate the functionality.</p>
                             </div>
@@ -471,8 +471,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="stepCarousel('prev')">Previous</button>
-                <button type="button" class="btn btn-primary" onclick="stepCarousel('next')">Next</button>
+                <button id="prevBtn" type="button" class="btn btn-secondary" onclick="stepCarousel('prev')">Previous</button>
+                <button id="nextBtn" type="button" class="btn btn-primary" onclick="stepCarousel('next')">Next</button>
             </div>
         </div>
     </div>
@@ -497,43 +497,43 @@
         var str='';
         switch (id) {
             case "carousel_1":
-                str = 'Layout';
+                str = '(1/12) - Layout';
                 break;
             case "carousel_2":
-                str = 'Image Pyramids';
+                str = '(2/12) - Image Pyramids';
                 break;
             case "carousel_3":
-                str = 'Simplifying the Layout';
+                str = '(3/12) - Simplifying the Layout';
                 break;
             case "carousel_4":
-                str = 'Navigation';
+                str = '(4/12) - Navigation';
                 break;
             case "carousel_5":
-                str = 'Navigating to "Look-through" view';
+                str = '(5/12) - Navigating to "Look-through" view';
                 break;
             case "carousel_6":
-                str = 'Navigating in "Look-through" view';
+                str = '(6/12) - Navigating in "Look-through" view';
                 break;
             case "carousel_7":
-                str = 'Map Layout';
+                str = '(7/12) - Map Layout';
                 break;
             case "carousel_8":
-                str = 'Measuring Tools';
+                str = '(8/12) - Measuring Tools';
                 break;
             case "carousel_9":
-                str = 'Changing the Appearance';
+                str = '(10/12) - Changing the Appearance';
                 break;
             case "carousel_10":
-                str = 'Downloading Data';
+                str = '(12/12) - Downloading Data';
                 break;
             case "carousel_11":
-                str = '"Look At" Tool';
+                str = '(9/12) - "Look At" Tool';
                 break;
             case "carousel_12":
-                str = '"Look At" Image Opacity';
+                str = '(11/12) - "Look At" Image Opacity';
                 break;
             default:
-            //the id is none of the above
+            //the id is none of the above 11/9/12/10 = 9/10/11/12
         }
         $('#helpsubtitle').text(str);
     })

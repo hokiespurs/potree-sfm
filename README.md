@@ -3,101 +3,59 @@ This project demonstrates a method for visualizing SfM derived pointcloud and im
 
 [view demo](http://research.engr.oregonstate.edu/lidar/pointcloud/divicarina/)
 
-![demo](img/demo_shorter.png)
+![demo](img/mainheader.gif)
 ## Features
-- Toggle with map button
-- Resizeable gif
-- Orange Dot and Footprint, Cyan Footprint
-- Move dot to move camera horizontally
-
-- Toggle Cameras
-- Click on Camera or use arrow to fly to camera FOV
-- Left Click Look Around, Right click moves camera and exits view
-
-- Measure Tools
-- Look At Tool
-  - filter
-  - view look at point
-- Clear Measurement
-
-- Appearance Buttons + Sliders
-
-- Download Button
 
 ## Dependencies
+- potree
+- THREE.js
+- bootstrap 4.1.0
+- etc
 
-## Attribution
+## Project Acknowledgements
+This project was completed as part of a final project for "Geovisual Analytics (GEOG 572)", taught at Oregon State University by Bo Zhao.  
 
+## Data Acknowledgements
+These data were collected as part of a 2017 Hurricane Irma and Maria Disaster
+Reconnaissance Survey in the US Virgin Islands.  Funding was provided by the 
+National Science Foundation through awards CMMI-1761461, CMMI-1661315.  Any 
+opinions, findings, and conclusions or recommendations expressed in this 
+material are those of the author(s) and do not necessarily reflect the views of
+the National Science Foundation
 
+## Metadata
+```
+-----------------------------
+   Divi Carina Bay                     
+-----------------------------
+Date                         : 13/14 Nov, 2017
+Local Time                   : 0835-0932     + 1455-1505
+UTC Time                     : 1235-1332 UTC + 1855-1905 UTC
+Location                     : "Divi Carina Bay", St Croix, USVI, USA
+Latitude                     : 17°44'32.91"N
+Longitude                    : 64°36'17.97"W
+                             
+UAS Platform                 : DJI Mavic Pro with Polarizing Lens Filter
 
-<hr>
+-----------------------------
+   MAPPING DATUM/ACCURACY 
+-----------------------------
+Horizontal Datum             : NAD83 UTM 20N
+Absolute Horizontal Accuracy : *Unknown
+Vertical Datum               : "Above Sea Level" from DJI Mavic GPS in exif data
+Absolute Vertical Accuracy   : *Unknown
+QAQC                         : Minimal 
 
-# OLD BELOW HERE
+*Note: The horizontal and vertical accuracies are estimated based on intuition.
+Data was coregistered to a 2012 aerial lidar dataset using photo-identifiable 
+targets throughout the scene.
 
-<hr>
-## Group members
-
-- Richie Slocum w/ help from Bo Zhao
-
-## Motivation
-
-Photogrammetrically derived 3D pointcloud data generated using Structure from Motion (SfM) algorithms is increasingly being used by a variety of scientific fields.  The 3D data can be used to make precise measurements and depict complex phenomena.  A traditional challenge with this data is disseminating the raw data to users who do not have a computer capable of viewing and analyzing the data. The open source project, Potree, enables interaction with these pointclouds in a web browser by leveraging a 3d voxel equivalent of 2D map tiling to enable the rendering of millions of data points.
-
-> Potree is a free open-source WebGL based point cloud renderer for large point clouds, developed at the Institute of Computer Graphics and Algorithms, TU Wien.
-
-Potree was developed to enable the viewing of pointclouds which come from a variety of sources which are not always photogrammetrically derived.  Therefore, there are currently no hooks in place to enable viewing the images within the 3D view.  The primary motivation of this work is to add some georeferenced images to the potree pointcloud viewer in a way which improves a user's ability to interpret the data.  
-
-The secondary motivation of this work is to customize the potree sidebar in a way which is simplifies the user interface and highlights tools which are useful for specific datasets.  A cesium map will also be implemented to provide a map depicting the spatial location of the pointcloud data.
-
-## Project Description
-
-For this project, I will implement a workflow or js library to add camera planes to the scene.  This is common in commercial SfM software packages, and provides the user insight into where the images were taken from.  The added information of the image can sometimes provide the user with more information than just the pointcloud.  Below is an example from Pix4d demonstrating the images visualized in 3D space.  If time allows, I will attempt tp implement the green rays going from a user selected point to each of the cameras which see that point.  
-
-![pix4d](https://github.com/hokiespurs/images-in-a-potree/blob/master/img/Pix4D.png?raw=true)
-
-Cesium will also be implemented to add a basemap under the pointcloud.  This will help give further perspective as to the location of the pointcloud.
-
-![cesium](https://github.com/hokiespurs/images-in-a-potree/blob/master/img/cesium.png?raw=true)
-
-Finally, the standard sidebar, shown above, will be modified to change the look and highlight only specific tools which apply for SfM pointclouds.  This customized sidebar will be designed during the project, and will aim to improve the user experience when viewing the dataset.
-
-## Data Source
-
-For my research at Oregon State University in the Civil Engineering Department, I have acquired and processed many photogrammetric pointclouds.  I will use these pointclouds to test this project.  Specifically, I will likely focus on Divi Carina Bay, on the USVI.  This data is already hosted [here](http://research.engr.oregonstate.edu/lidar/pointcloud/20171107_USVI/potree/DiviCarinaBay_potree_dense_filt/DiviCarinaBay.html). 
-
-## Interface Design
-
-The interface will be similar to the image from Pix4D shown in the project description.  There will be a pointcloud that the user can fly around, but there will be images added to the scene depicting where the image was acquired from.  The sidebar will be customized to enhance the user experience for specific datasets, and a Cesium map will be added beneath the pointcloud.
-
-## Proposed Timeline
-| Task                                                         |      Date      | Date Completed |
-| :----------------------------------------------------------- | :------------: | :------------: | 
-| item1</li> Add Image texture to plane using THREE.js                    |   04/30/2018   | 04/30/2018 |
-| Add one Image plane-pyramid into a Potree scene w/ rotation matrix applied |   05/14/2018   | 05/13/2018 |
-| Add Cesium Map                                               |   05/21/2018   | N/A  |
-| Custom Layout Design                                         |   05/21/2018   | 05/10/2018  |
-| Custom Layout Implementation                                 |   05/28/2018   | 05/30/2018  |
-| Finish Demo                                                  |   06/01/2018   | 06/04/2018  |
-| Finish Documentation                                         |   06/08/2018   |             |
-| option 1: Add tool to draw rays from clicked points          | if time allows | - |
-| option 2: Make nice js library to make adding these to Potree really easy | if time allows | - |
-| option 3: Snap view to images with correct FOV               | if time allows | 06/04/2018 |
-
-* Note that the Cesium Map was integrated, but I felt it cluttered the visual and took away from the content.  Therefore, it is not included in the final project.
-
-## Interface Sketch
-Below is a rough idea for the desired interface.  I hope to use a bootstrap navigation bar up top, with icons to indicate the possible dropdowns.  The main potree viewer will be enhanced with the optional addition of a Cesium map, and "image pyradmids" in the scene.  These image pyramids will allow the user to see how the pointcloud was generated.  An attribution will also be placed in the lower right, similar to how leaflet does.
-
-![layout](https://github.com/hokiespurs/images-in-a-potree/blob/master/img/layoutdesignv1.jpg?raw=true)
-
-## Color Palette
-The colors will be simple, so as not to take away from the pointcloud visual.  I will use the [bootstrap "light navbar"](https://getbootstrap.com/docs/4.0/components/navbar/), and follow that gray color scheme throughout.
-
-For the font, I will use the default Bootstrap ```"Helvetica Neue", Helvetica, Arial, sans-serif.```.  
-
-See below for an example.
-
-![design](https://github.com/hokiespurs/images-in-a-potree/blob/master/img/design.png?raw=true)
-
-
-
+-----------------------------
+   SUMMARY 
+-----------------------------
+Data was acquired at Divi Carina Bay Resort on two consecutive days.  The 
+hotel was badly damaged from the storm, and the acquisition was performed with
+the goal of generating a high resolution 3D model and capturing the stuctural
+damage to the building.  Multiple nadir and oblique flights were performed in 
+an effort to capture data from all sides of the building.
+```

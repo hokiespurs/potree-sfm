@@ -1,19 +1,40 @@
 # potree-sfm
-This project demonstrates a method for visualizing SfM derived pointcloud and image data in a web browser. Small details, which were not resolved by the SfM pointcloud, can still be visualized using the images.
+<img src="img/mainheader.gif" width="100%" href="http://research.engr.oregonstate.edu/lidar/pointcloud/divicarina/">
 
 [view demo](http://research.engr.oregonstate.edu/lidar/pointcloud/divicarina/)
 
-![demo](img/mainheader.gif)
-## Features
+This project demonstrates a method for visualizing SfM derived pointcloud and image data in a web browser. Small details, which were not resolved by the SfM pointcloud, can still be visualized using the images.
 
+## Features
+- [Leaflet](https://leafletjs.com/) map with:
+  - a 5cm orthophoto overlaid on a [CartoDB](https://carto.com/location-data-services/basemaps/) basemap
+  - a draggable marker representing the current view position
+  - Orange (current view) and Cyan (image) polygons representing the estimated camera footprint (at minimum Z elevation)
+  - a resizeable `<div>` container
+- [Bootstrap](https://getbootstrap.com/) toolbar with options to:
+  - change to "look through" the previous camera
+  - toggle image visibility
+  - change to "look through" the next camera
+  - toggle map visibility
+  - Measurement Tools
+  - Change the pointcloud appearance
+  - Download Data
+  - Toggle Information Modal
+  - Toggle Help Modal with [Bootstrap Carousel](https://getbootstrap.com/docs/4.0/components/carousel/) of "howto" images
+- Main, 3D viewer
+  - 3D pointcloud generated via Structure from Motion processing with [Agisoft Photoscan](http://www.agisoft.com/)
+  - Pointcloud visualization and coloring powered by [potree]()
+  - 3D "Image pyramids" depicting camera positions powered by [three.js]()
+  
 ## Dependencies
-- potree
-- THREE.js
-- bootstrap 4.1.0
+This project was made possible by leveraging the contributions of many open-source code available from:
+- [potree](http://potree.org/)
+- [three.js](https://threejs.org/)
+- [bootstrap 4.1.0](https://getbootstrap.com/)
 - etc
 
 ## Project Acknowledgements
-This project was completed as part of a final project for "Geovisual Analytics (GEOG 572)", taught at Oregon State University by Bo Zhao.  
+This project was completed as a final project for "Geovisual Analytics ([GEOG 572](https://github.com/jakobzhao/geog4572))", taught at Oregon State University by Bo Zhao.  
 
 ## Data Acknowledgements
 These data were collected as part of a 2017 Hurricane Irma and Maria Disaster

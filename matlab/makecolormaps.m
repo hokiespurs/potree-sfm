@@ -24,3 +24,12 @@ for i=1:numel(nlines)
     imshow(outimage);
     imwrite(outimage,[outdir sprintf('Colormap_%02.f.png',i)]);
 end
+
+%% 
+cmap = jet(100);
+outimage = zeros(100,1,3,'uint8');
+outimage(:)=cmap(:)*255;
+outimage = repmat(outimage,[1 10 1]);
+
+image(outimage)
+imwrite(rot90(outimage),'jet.png');
